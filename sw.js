@@ -1,6 +1,6 @@
 /* Offline support for the installed app. Pages load from the network first so updates show up;
    files fall back to the saved copy when there is no connection. Bump VERSION after each release. */
-const VERSION = 'studio-v6';
+const VERSION = 'studio-v7';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/i18n.js', 'js/brand.js', 'js/bg.js', 'js/state.js', 'js/storage.js', 'js/media.js', 'js/ai.js', 'js/views-user.js', 'js/views-admin.js', 'js/export.js', 'js/app.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];

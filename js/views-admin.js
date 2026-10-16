@@ -96,6 +96,7 @@ V['a-settings'] = () => {
  ${fld(t('f_apikey'), inp('st-ok', 'settings.orKey', s.orKey, 'type="password" autocomplete="off" placeholder="sk-or-..."'))}
  ${fld(t('f_txtmodel'), inp('st-tm', 'settings.txtModel', s.txtModel))}
  ${fld(t('f_imgmodel'), inp('st-im', 'settings.imgModel', s.imgModel))}
+ ${fld(t('f_freemodel'), inp('st-fm', 'settings.freeImgModel', s.freeImgModel))}
  ${fld(t('f_vidmodel'), inp('st-vm', 'settings.vidModel', s.vidModel))}
  ${fld(t('f_videp'), inp('st-ve', 'settings.vidEndpoint', s.vidEndpoint))}
  ${fld(t('f_vidsec'), inp('st-vs', 'settings.vidSec', s.vidSec, 'type="number" min="6" max="15"'))}</div>

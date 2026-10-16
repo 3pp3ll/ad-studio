@@ -296,6 +296,7 @@ const I18N = {
 
   set_t: ['إعدادات النظام', 'System settings'], or_t: ['ربط OpenRouter', 'OpenRouter link'], on_l: ['الربط مفعّل', 'Link on'], off_l: ['غير مفعّل', 'Off'],
   f_apiurl: ['رابط API (أو رابط البروكسي)', 'API URL (or your proxy URL)'], f_apikey: ['مفتاح API (اتركه فارغاً مع البروكسي)', 'API key (leave empty with a proxy)'], f_txtmodel: ['نموذج كتابة المحتوى', 'Text model'],
+  f_freemodel: ['نموذج صور «تصميم حر» (الأفضل في النصوص والشعارات)', 'Free design image model (best for text and logos)'],
   f_imgmodel: ['نموذج تصميم الصور (Nano Banana)', 'Image model (Nano Banana)'], f_vidmodel: ['نموذج الفيديو (Grok)', 'Video model (Grok)'], f_videp: ['مسار توليد الفيديو', 'Video endpoint path'], f_vidsec: ['مدة الفيديو الافتراضية (6 إلى 15 ثانية)', 'Default video length (6 to 15 seconds)'],
   or_live: ['استخدام OpenRouter فعلياً بدل القوالب التجريبية', 'Use OpenRouter for real instead of the built-in templates'], b_test: ['اختبار الاتصال', 'Test connection'],
   or_note: ['المفتاح المكتوب هنا يُحفظ في متصفح هذا الجهاز ويراه كل من يستخدمه، فهو للتجربة فقط. للنشر استخدم البروكسي (server/worker.js) وضع رابطه في «رابط API» واترك المفتاح فارغاً. الاتصال يعمل من الملف المحمّل أو من موقعك، أما النسخة المنشورة داخل Claude فتحجب الاتصال الخارجي.', 'A key typed here is stored in this browser and visible to anyone using it, so it is for testing only. For a public site use the proxy (server/worker.js): put its URL in "API URL" and leave the key empty. Calls work from the downloaded file or your own site; the copy published inside Claude blocks outside connections.'],
@@ -407,9 +408,14 @@ Object.assign(I18N, {
   nav_free: ['تصميم حر', 'Free design'], fr_sub: ['اكتب فكرتك وولّد صورة أو فيديو مباشرة، بدون إعدادات إضافية.', 'Describe your idea and generate an image or a video directly, no extra settings.'],
   fr_prompt: ['موضوع التصميم / وصف الصورة أو الفيديو', 'Design topic / image or video description'],
   fr_genimg: ['توليد صورة', 'Generate image'], fr_genvid: ['توليد فيديو', 'Generate video'],
-  fr_vidinfo: ['الفيديو عمودي 9:16 ومدته {n} ثوانٍ. يُضاف شعار الشركة في الزاوية تلقائياً.', 'Videos are vertical 9:16 and {n} seconds long. The company logo is added in the corner automatically.'],
+  fr_vidinfo: ['الفيديو عمودي 9:16 ومدته {n} ثوانٍ.', 'Videos are vertical 9:16 and {n} seconds long.'],
+  fr_model: ['يُحسَّن وصفك تلقائياً قبل الإرسال، والصور بنموذج {m}.', 'Your description is refined automatically before sending; images use {m}.'],
+  fr_wm: ['العلامة المائية:', 'Watermark:'], fr_wm_none: ['بدون علامة', 'No mark'], fr_wm_logo: ['شعار {brand}', '{brand} logo'],
+  fr_wm_pending: ['في سفاري يحتاج حفظ الصوت مع الشعار لمسة منك: اضغط «إضافة الشعار» وانتظر حتى ينتهي المقطع.', 'In Safari, keeping the sound with the logo needs a tap: press "Add the logo" and wait for the clip to finish.'],
+  fr_wm_add: ['إضافة الشعار', 'Add the logo'], m_wm_tap: ['المقطع جاهز. اضغط «إضافة الشعار» لإكماله مع الصوت.', 'The clip is ready. Press "Add the logo" to finish it with sound.'],
+  m_wm_again: ['جاهز، اضغط «إضافة الشعار» مرة أخرى.', 'Ready, press "Add the logo" again.'], m_vid_prep: ['جارٍ تجهيز الوصف وإرسال الطلب…', 'Preparing the description and sending the request…'],
   fr_offline: ['بدون ربط OpenRouter تُنشأ بطاقة بسيطة بالنص للتجربة فقط، والفيديو غير متاح.', 'Without the OpenRouter link you get a simple text card for trying the page; video is unavailable.'],
-  fr_note: ['أي محتوى يُصمَّم عبر هذه الصفحة لا تضيف عليه الصفحة أي وسم أو علامة «ذكاء اصطناعي»؛ العلامة الوحيدة هي شعار {brand} في زاوية الصورة أو الفيديو.', 'This page adds no "AI" label or tag to anything designed here; the only mark is the {brand} logo in the corner of the image or video.'],
+  fr_note: ['أي محتوى يُصمَّم عبر هذه الصفحة لا تضيف عليه الصفحة أي وسم أو علامة «ذكاء اصطناعي»، وشعار {brand} يُضاف فقط إذا اخترته.', 'This page adds no "AI" label or tag to anything designed here; the {brand} logo is added only if you choose it.'],
   fr_note2: ['تنبيه: بعض مزوّدي النماذج يضعون علامة رقمية غير مرئية داخل الملف، وبعض المنصات تطلب الإفصاح عن المحتوى المولَّد بالذكاء الاصطناعي.', 'Note: some model providers embed an invisible digital watermark in the file, and some platforms require disclosing AI-generated content.'],
   fr_empty: ['اكتب الوصف ثم اضغط «توليد صورة» أو «توليد فيديو».', 'Write the description, then press "Generate image" or "Generate video".'],
   fr_dl: ['حفظ على الجهاز', 'Save to device'], fr_dl_ok: ['تم الحفظ على الجهاز', 'Saved to your device'],
@@ -569,7 +575,7 @@ const logoSrc = v => {
    The two stops take their colour from --m1/--m2, which are slightly lighter in dark mode. */
 const M_ICON = '<svg xmlns="http://www.w3.org/2000/svg" class="mico" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="M"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="s1" stop-color="#F26A0F"/><stop offset="1" class="s2" stop-color="#1B8FBF"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#mg)"/><text x="16" y="16.5" text-anchor="middle" dominant-baseline="central" font-family="Alexandria,Arial,sans-serif" font-weight="700" font-size="19" fill="#fff">M</text></svg>';
 const iconIsM = () => co().iconStyle !== 'logo';
-const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '#1b8fbf', accent: '#f26a0f', dark: false, bg: 'balloon', bgImg: '', page: 'mist', v: 4 } });
+const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', freeImgModel: 'google/gemini-3-pro-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '#1b8fbf', accent: '#f26a0f', dark: false, bg: 'balloon', bgImg: '', page: 'mist', v: 4 } });
 
 function seed() {
   const plans = [
@@ -687,7 +693,8 @@ function loadState() {
   let o = null;
   try { o = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
   S = migrate(o) || seed();
-  S.free = S.free || []; S.freeDraft = S.freeDraft || { prompt: '', last: null };
+  S.free = S.free || []; S.freeDraft = { prompt: '', last: null, wm: 'none', ...(S.freeDraft || {}) };
+  if (!S.settings.freeImgModel) S.settings.freeImgModel = 'google/gemini-3-pro-image';
   S.settings.company = { ...defaultCompany(), ...(S.settings.company || {}) };
   S.settings.brand = { primary: '', accent: '', dark: false, ...(S.settings.brand || {}) };
   /* v2: the day theme uses the identity colours by default (once; a later reset to the original palette is kept). */
@@ -886,32 +893,47 @@ async function markImage(blob) {
     return await new Promise(ok => c.toBlob(ok, 'image/jpeg', .92));
   } finally { URL.revokeObjectURL(url); }
 }
-/* Re-records the clip through a canvas with the logo on top. Plays muted; the sound is taken from the element's own stream where the browser offers one. */
-async function markVideo(blob, onStatus) {
-  const type = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
-  if (!type || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
+/* Video watermark: the clip is re-recorded through a canvas with the logo on top.
+   Chrome and Firefox hand over the clip's sound directly. Safari cannot, so there the sound is routed
+   through Web Audio, which iOS only allows from a tap: wmPrep marks that case with needTap. */
+const recType = () => ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+async function wmPrep(blob) {
+  if (!recType() || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
   const lg = await wmLogo(), url = URL.createObjectURL(blob), v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
-  try {
-    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
-    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
-    const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
-    const src = v.captureStream ? v.captureStream() : v.mozCaptureStream ? v.mozCaptureStream() : null;
-    /* Start once so the element's tracks exist, then rewind and record from the first frame. */
-    await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
-    draw();
-    const out = new MediaStream([...c.captureStream(30).getVideoTracks(), ...(src ? src.getAudioTracks() : [])]);
-    const rec = new MediaRecorder(out, { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
-    rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
-    const done = new Promise(ok => { rec.onstop = ok; });
-    let on = true;
-    const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
-    rec.start(500); await v.play(); loop();
-    const total = v.duration || 15, tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
-    await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
-    on = false; clearInterval(tick); draw(); rec.stop(); await done;
-    return new Blob(parts, { type: type.split(';')[0] });
-  } finally { v.pause(); v.removeAttribute('src'); URL.revokeObjectURL(url); }
+  await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
+  const P = { v, lg, url, tracks: [] }, cs = v.captureStream ? () => v.captureStream() : v.mozCaptureStream ? () => v.mozCaptureStream() : null;
+  if (cs) {
+    /* Start once so the element's tracks exist, then rewind. */
+    const st = cs(); await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
+    P.tracks = st.getAudioTracks();
+  } else P.needTap = !v.audioTracks || v.audioTracks.length > 0;
+  return P;
+}
+const wmFree = P => { try { P.v.pause(); P.v.removeAttribute('src'); P.v.load(); } catch (e) {} URL.revokeObjectURL(P.url); };
+/* Synchronous up to v.play(), so it can run inside a tap. With ctx, the sound goes through Web Audio (not to the speakers). */
+function wmRecord(P, onStatus, ctx) {
+  const { v, lg } = P, type = recType(), c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+  const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
+  let audio = P.tracks;
+  if (ctx) { if (!P.node) P.node = ctx.createMediaElementSource(v); const dest = ctx.createMediaStreamDestination(); P.node.connect(dest); audio = dest.stream.getAudioTracks(); v.muted = false; }
+  v.currentTime = 0; draw();
+  const rec = new MediaRecorder(new MediaStream([...c.captureStream(30).getVideoTracks(), ...audio]), { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
+  rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
+  const stopped = new Promise(ok => { rec.onstop = ok; });
+  let on = true;
+  const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
+  rec.start(500); const pl = v.play(); loop();
+  return (async () => {
+    let tick;
+    try {
+      await pl;
+      const total = v.duration || 15; tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
+      await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
+      on = false; draw(); rec.stop(); await stopped;
+      return new Blob(parts, { type: type.split(';')[0] });
+    } finally { on = false; clearInterval(tick); if (rec.state !== 'inactive') rec.stop(); }
+  })();
 }
 /* Without the OpenRouter link: a plain brand card carrying the description, for trying the page. */
 function freePoster(text) {
@@ -1041,8 +1063,17 @@ async function aiImage(d) {
 }
 
 /* Free design: the description goes to the image model as written. */
+/* A short request becomes one precise English prompt; words that must appear stay in their own language and spelling, in quotes. */
+const FREE_SYS = 'You turn a short user request into one precise prompt for an AI {k} generation model. Write the prompt in English. Keep the user\'s intent exactly and add concrete details: subject, composition, style, colours, lighting{v}. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script), say it must be spelled exactly as written, large and legible, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a clean flat vector-style mark with the name, centered on a plain white background, no mockup, no extra symbols. Reply with the prompt only.';
+async function freePrompt(p, kind) {
+  if (!aiOn()) return p;
+  try {
+    const j = await orFetch('/chat/completions', { model: S.settings.txtModel, messages: [{ role: 'system', content: FREE_SYS.replace('{k}', kind === 'vid' ? 'video' : 'image').replace('{v}', kind === 'vid' ? ', camera movement and motion' : '') }, { role: 'user', content: p }] });
+    return ((j.choices[0].message.content || '').trim() || p) + (kind === 'vid' ? '' : '\nUser request (for reference): ' + p);
+  } catch (e) { return p; }
+}
 async function aiFreeImage(prompt) {
-  const j = await orFetch('/chat/completions', { model: S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const j = await orFetch('/chat/completions', { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
   const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
   if (!u) throw new Error(t('e_no_image'));
   return toBlob(u);
@@ -1240,10 +1271,11 @@ V.free = () => {
  <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
  <div class="cols"><div class="panel">${errBox()}
  ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
+ <div class="row" role="group" aria-label="${esc(t('fr_wm'))}"><span class="sub">${t('fr_wm')}</span>${['none', 'logo'].map(k => `<button class="btn s${(f.wm || 'none') === k ? ' p' : ''}" data-act="freewmset" data-v="${k}" aria-pressed="${(f.wm || 'none') === k}">${t('fr_wm_' + k, { brand: esc(coBrand()) })}</button>`).join('')}</div>
  <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
  ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
- <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) : t('fr_offline')}</p></div>
- <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}
+ <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) + ' ' + t('fr_model', { m: esc(S.settings.freeImgModel || S.settings.imgModel) }) : t('fr_offline')}</p></div>
+ <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}${l.wmPending ? `<p class="note info">${t('fr_wm_pending')}</p><button class="btn v" style="align-self:start" data-act="freewm" ${FREE.busy ? 'disabled' : ''}>${ic('wand')} ${t('fr_wm_add')}</button>` : ''}
  <div class="row"><button class="btn p" data-act="freedl" data-id="last">${ic('dl')} ${t('fr_dl')}</button><button class="btn" data-act="freesave" ${l.saved ? 'disabled' : ''}>${ic('mark')} ${t(l.saved ? 'fr_saved' : 'fr_save')}</button></div>
  <div class="row">${icoAct('freeexp', 'last', 'share', t('fr_exp'))}<span class="sub">${t('fr_exp')}</span></div>` : `<p class="sub">${t('fr_empty')}</p>`}</div></div>
  <h2>${t('fr_lib')}</h2>
@@ -1427,6 +1459,7 @@ V['a-settings'] = () => {
  ${fld(t('f_apikey'), inp('st-ok', 'settings.orKey', s.orKey, 'type="password" autocomplete="off" placeholder="sk-or-..."'))}
  ${fld(t('f_txtmodel'), inp('st-tm', 'settings.txtModel', s.txtModel))}
  ${fld(t('f_imgmodel'), inp('st-im', 'settings.imgModel', s.imgModel))}
+ ${fld(t('f_freemodel'), inp('st-fm', 'settings.freeImgModel', s.freeImgModel))}
  ${fld(t('f_vidmodel'), inp('st-vm', 'settings.vidModel', s.vidModel))}
  ${fld(t('f_videp'), inp('st-ve', 'settings.vidEndpoint', s.vidEndpoint))}
  ${fld(t('f_vidsec'), inp('st-vs', 'settings.vidSec', s.vidSec, 'type="number" min="6" max="15"'))}</div>
@@ -1622,7 +1655,7 @@ function invoiceFile(inv) {
 </script>
 <script>
 /* Boot, navigation, rendering, actions and events. Loaded last. */
-let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' };
+let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' }, WMP = null, WMCTX = null;
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
 function toast(m, bad) {
@@ -1779,11 +1812,12 @@ const num = (id, min = 0) => Math.max(min, Math.floor(+$(id).value || 0));
 const freeItem = id => { const l = S.freeDraft.last; return id === 'last' ? (l && l.saved && byId(S.free, l.saved)) || l : byId(S.free, id); };
 const freeName = (it, b) => `${(co().brandEn || 'mentad').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${it.kind === 'vid' ? 'video' : 'image'}-${it.date.slice(0, 10)}.${/mp4/.test(b.type) ? 'mp4' : /webm/.test(b.type) ? 'webm' : /png/.test(b.type) ? 'png' : 'jpg'}`;
 const normTags = s => (s || '').split(/[\s,،]+/).filter(Boolean).map(w => w.startsWith('#') ? w : '#' + w).join(' ');
-async function freeLast(kind, prompt, blob) {
+async function freeLast(kind, prompt, blob, wm) {
   const f = S.freeDraft, old = f.last, id = rid('M');
   await mput(id, blob);
-  f.last = { kind, prompt, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
+  f.last = { kind, prompt, wm: !!wm, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
   if (old && !old.saved) orphan(old.media.id);
+  if (WMP && WMP.id !== id) { wmFree(WMP.P); WMP = null; }
 }
 
 /* ---------- actions (data-act) ---------- */
@@ -1924,42 +1958,73 @@ const A = {
     if (S.route === 'video') render();
   },
   /* ---------- free design ---------- */
+  freewmset(d) { S.freeDraft.wm = d.v === 'logo' ? 'logo' : 'none'; save(); render(); },
   async freeimg() {
-    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur();
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), wm = f.wm === 'logo';
     if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
     if (left(u, 'images') <= 0) { quotaModal('images'); return; }
     if (!canStore()) return;
     const live = aiOn(); let blob = null;
     busy(1);
     try {
-      if (live) { try { blob = await aiFreeImage(p); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
+      if (live) { try { blob = await aiFreeImage(await freePrompt(p, 'img')); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
       else blob = await toBlob(freePoster(p));
-      try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); }
-      await freeLast('img', p, blob);
+      if (wm) { try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); } }
+      await freeLast('img', p, blob, wm);
       u.used.images++; logAI('image'); toast(t('m_img_ok'));
     } finally { busy(0); save(); render(); }
   },
   async freevid() {
-    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6)), wm = f.wm === 'logo';
     if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
     if (!aiOn()) { toast(t('m_vid_need'), 1); return; }
     if (left(u, 'vidSecs') < secs) { quotaModal('vidSecs'); return; }
     if (!canStore()) return;
     const show = s => { FREE.status = s; if (S.route === 'free') render(); };
-    FREE = { busy: true, status: t('m_vid_sent') }; render();
+    FREE = { busy: true, status: t('m_vid_prep') }; render();
     try {
-      let b = await aiVideo({ platform: 'tiktok', vidDesc: p, refs: [], scenes: null }, show, secs, null);
+      let b = await aiVideo({ platform: 'tiktok', vidDesc: await freePrompt(p, 'vid'), refs: [], scenes: null }, show, secs, null), pend = false;
       u.used.vidSecs += secs; logAI('video'); save();
-      show(t('m_wm_vid', { n: 0 }));
-      try { b = await markVideo(b, n => show(t('m_wm_vid', { n }))); } catch (e) { toast(t('m_wm_fail'), 1); }
-      await freeLast('vid', p, b); toast(t('m_vid_ok'));
+      if (wm) {
+        show(t('m_wm_vid', { n: 0 }));
+        try {
+          const P = await wmPrep(b);
+          if (P.needTap) { pend = true; await freeLast('vid', p, b, false); S.freeDraft.last.wmPending = true; WMP = { id: S.freeDraft.last.media.id, P }; }
+          else { b = await wmRecord(P, n => show(t('m_wm_vid', { n }))); wmFree(P); }
+        } catch (e) { toast(t('m_wm_fail'), 1); }
+      }
+      if (!pend) await freeLast('vid', p, b, wm);
+      toast(t(pend ? 'm_wm_tap' : 'm_vid_ok'));
     } catch (e) { toast(t('m_vid_fail', { e: e.message }), 1); }
     FREE = { busy: false, status: '' }; save(); if (S.route === 'free') render();
+  },
+  /* Safari: the logo is burned in from this tap so the clip keeps its sound. Everything before wmRecord's play() runs inside the tap. */
+  freewm() {
+    const l = S.freeDraft.last; if (!l || !l.wmPending || FREE.busy) return;
+    if (!WMP || WMP.id !== l.media.id) {
+      const b = BLOBS.get(l.media.id); if (!b) return;
+      FREE = { busy: true, status: t('m_wm_vid', { n: 0 }) }; render();
+      wmPrep(b).then(P => { WMP = { id: l.media.id, P }; toast(t('m_wm_again')); }).catch(() => toast(t('m_wm_fail'), 1)).finally(() => { FREE = { busy: false, status: '' }; render(); });
+      return;
+    }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    try { if (AC && !WMCTX) WMCTX = new AC(); if (WMCTX && WMCTX.state !== 'running') WMCTX.resume(); } catch (e) { WMCTX = null; }
+    const P = WMP.P, show = n => { FREE.status = t('m_wm_vid', { n }); if (S.route === 'free') render(); };
+    let job;
+    try { job = wmRecord(P, show, WMCTX); } catch (e) { toast(t('m_wm_fail'), 1); return; }
+    FREE = { busy: true, status: t('m_wm_vid', { n: 0 }) }; render();
+    job.then(async b => {
+      wmFree(P); WMP = null;
+      const saved = l.saved && byId(S.free, l.saved);
+      await freeLast('vid', l.prompt, b, true);
+      if (saved) { orphan(saved.media.id); saved.media = { ...S.freeDraft.last.media }; S.freeDraft.last.saved = saved.id; }
+      toast(t('m_vid_ok'));
+    }).catch(() => toast(t('m_wm_fail'), 1)).finally(() => { FREE = { busy: false, status: '' }; save(); render(); });
   },
   freedl(d) { const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; } if (dl(b, freeName(it, b))) toast(t('fr_dl_ok')); },
   freesave() {
     const l = S.freeDraft.last; if (!l || l.saved) return;
-    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
+    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, wm: !!l.wm, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
     S.free.push(it); l.saved = it.id; save(); render(); toast(t('m_fr_saved'));
   },
   freedel(d) {

@@ -160,10 +160,11 @@ V.free = () => {
  <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
  <div class="cols"><div class="panel">${errBox()}
  ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
+ <div class="row" role="group" aria-label="${esc(t('fr_wm'))}"><span class="sub">${t('fr_wm')}</span>${['none', 'logo'].map(k => `<button class="btn s${(f.wm || 'none') === k ? ' p' : ''}" data-act="freewmset" data-v="${k}" aria-pressed="${(f.wm || 'none') === k}">${t('fr_wm_' + k, { brand: esc(coBrand()) })}</button>`).join('')}</div>
  <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
  ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
- <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) : t('fr_offline')}</p></div>
- <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}
+ <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) + ' ' + t('fr_model', { m: esc(S.settings.freeImgModel || S.settings.imgModel) }) : t('fr_offline')}</p></div>
+ <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}${l.wmPending ? `<p class="note info">${t('fr_wm_pending')}</p><button class="btn v" style="align-self:start" data-act="freewm" ${FREE.busy ? 'disabled' : ''}>${ic('wand')} ${t('fr_wm_add')}</button>` : ''}
  <div class="row"><button class="btn p" data-act="freedl" data-id="last">${ic('dl')} ${t('fr_dl')}</button><button class="btn" data-act="freesave" ${l.saved ? 'disabled' : ''}>${ic('mark')} ${t(l.saved ? 'fr_saved' : 'fr_save')}</button></div>
  <div class="row">${icoAct('freeexp', 'last', 'share', t('fr_exp'))}<span class="sub">${t('fr_exp')}</span></div>` : `<p class="sub">${t('fr_empty')}</p>`}</div></div>
  <h2>${t('fr_lib')}</h2>

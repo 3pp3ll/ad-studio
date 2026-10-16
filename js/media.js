@@ -96,32 +96,47 @@ async function markImage(blob) {
     return await new Promise(ok => c.toBlob(ok, 'image/jpeg', .92));
   } finally { URL.revokeObjectURL(url); }
 }
-/* Re-records the clip through a canvas with the logo on top. Plays muted; the sound is taken from the element's own stream where the browser offers one. */
-async function markVideo(blob, onStatus) {
-  const type = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
-  if (!type || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
+/* Video watermark: the clip is re-recorded through a canvas with the logo on top.
+   Chrome and Firefox hand over the clip's sound directly. Safari cannot, so there the sound is routed
+   through Web Audio, which iOS only allows from a tap: wmPrep marks that case with needTap. */
+const recType = () => ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+async function wmPrep(blob) {
+  if (!recType() || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
   const lg = await wmLogo(), url = URL.createObjectURL(blob), v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
-  try {
-    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
-    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
-    const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
-    const src = v.captureStream ? v.captureStream() : v.mozCaptureStream ? v.mozCaptureStream() : null;
-    /* Start once so the element's tracks exist, then rewind and record from the first frame. */
-    await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
-    draw();
-    const out = new MediaStream([...c.captureStream(30).getVideoTracks(), ...(src ? src.getAudioTracks() : [])]);
-    const rec = new MediaRecorder(out, { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
-    rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
-    const done = new Promise(ok => { rec.onstop = ok; });
-    let on = true;
-    const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
-    rec.start(500); await v.play(); loop();
-    const total = v.duration || 15, tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
-    await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
-    on = false; clearInterval(tick); draw(); rec.stop(); await done;
-    return new Blob(parts, { type: type.split(';')[0] });
-  } finally { v.pause(); v.removeAttribute('src'); URL.revokeObjectURL(url); }
+  await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
+  const P = { v, lg, url, tracks: [] }, cs = v.captureStream ? () => v.captureStream() : v.mozCaptureStream ? () => v.mozCaptureStream() : null;
+  if (cs) {
+    /* Start once so the element's tracks exist, then rewind. */
+    const st = cs(); await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
+    P.tracks = st.getAudioTracks();
+  } else P.needTap = !v.audioTracks || v.audioTracks.length > 0;
+  return P;
+}
+const wmFree = P => { try { P.v.pause(); P.v.removeAttribute('src'); P.v.load(); } catch (e) {} URL.revokeObjectURL(P.url); };
+/* Synchronous up to v.play(), so it can run inside a tap. With ctx, the sound goes through Web Audio (not to the speakers). */
+function wmRecord(P, onStatus, ctx) {
+  const { v, lg } = P, type = recType(), c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+  const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
+  let audio = P.tracks;
+  if (ctx) { if (!P.node) P.node = ctx.createMediaElementSource(v); const dest = ctx.createMediaStreamDestination(); P.node.connect(dest); audio = dest.stream.getAudioTracks(); v.muted = false; }
+  v.currentTime = 0; draw();
+  const rec = new MediaRecorder(new MediaStream([...c.captureStream(30).getVideoTracks(), ...audio]), { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
+  rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
+  const stopped = new Promise(ok => { rec.onstop = ok; });
+  let on = true;
+  const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
+  rec.start(500); const pl = v.play(); loop();
+  return (async () => {
+    let tick;
+    try {
+      await pl;
+      const total = v.duration || 15; tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
+      await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
+      on = false; draw(); rec.stop(); await stopped;
+      return new Blob(parts, { type: type.split(';')[0] });
+    } finally { on = false; clearInterval(tick); if (rec.state !== 'inactive') rec.stop(); }
+  })();
 }
 /* Without the OpenRouter link: a plain brand card carrying the description, for trying the page. */
 function freePoster(text) {

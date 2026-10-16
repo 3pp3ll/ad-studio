@@ -1,5 +1,5 @@
 /* Boot, navigation, rendering, actions and events. Loaded last. */
-let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' };
+let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' }, WMP = null, WMCTX = null;
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
 function toast(m, bad) {
@@ -156,11 +156,12 @@ const num = (id, min = 0) => Math.max(min, Math.floor(+$(id).value || 0));
 const freeItem = id => { const l = S.freeDraft.last; return id === 'last' ? (l && l.saved && byId(S.free, l.saved)) || l : byId(S.free, id); };
 const freeName = (it, b) => `${(co().brandEn || 'mentad').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${it.kind === 'vid' ? 'video' : 'image'}-${it.date.slice(0, 10)}.${/mp4/.test(b.type) ? 'mp4' : /webm/.test(b.type) ? 'webm' : /png/.test(b.type) ? 'png' : 'jpg'}`;
 const normTags = s => (s || '').split(/[\s,،]+/).filter(Boolean).map(w => w.startsWith('#') ? w : '#' + w).join(' ');
-async function freeLast(kind, prompt, blob) {
+async function freeLast(kind, prompt, blob, wm) {
   const f = S.freeDraft, old = f.last, id = rid('M');
   await mput(id, blob);
-  f.last = { kind, prompt, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
+  f.last = { kind, prompt, wm: !!wm, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
   if (old && !old.saved) orphan(old.media.id);
+  if (WMP && WMP.id !== id) { wmFree(WMP.P); WMP = null; }
 }
 
 /* ---------- actions (data-act) ---------- */
@@ -301,42 +302,73 @@ const A = {
     if (S.route === 'video') render();
   },
   /* ---------- free design ---------- */
+  freewmset(d) { S.freeDraft.wm = d.v === 'logo' ? 'logo' : 'none'; save(); render(); },
   async freeimg() {
-    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur();
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), wm = f.wm === 'logo';
     if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
     if (left(u, 'images') <= 0) { quotaModal('images'); return; }
     if (!canStore()) return;
     const live = aiOn(); let blob = null;
     busy(1);
     try {
-      if (live) { try { blob = await aiFreeImage(p); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
+      if (live) { try { blob = await aiFreeImage(await freePrompt(p, 'img')); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
       else blob = await toBlob(freePoster(p));
-      try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); }
-      await freeLast('img', p, blob);
+      if (wm) { try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); } }
+      await freeLast('img', p, blob, wm);
       u.used.images++; logAI('image'); toast(t('m_img_ok'));
     } finally { busy(0); save(); render(); }
   },
   async freevid() {
-    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6)), wm = f.wm === 'logo';
     if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
     if (!aiOn()) { toast(t('m_vid_need'), 1); return; }
     if (left(u, 'vidSecs') < secs) { quotaModal('vidSecs'); return; }
     if (!canStore()) return;
     const show = s => { FREE.status = s; if (S.route === 'free') render(); };
-    FREE = { busy: true, status: t('m_vid_sent') }; render();
+    FREE = { busy: true, status: t('m_vid_prep') }; render();
     try {
-      let b = await aiVideo({ platform: 'tiktok', vidDesc: p, refs: [], scenes: null }, show, secs, null);
+      let b = await aiVideo({ platform: 'tiktok', vidDesc: await freePrompt(p, 'vid'), refs: [], scenes: null }, show, secs, null), pend = false;
       u.used.vidSecs += secs; logAI('video'); save();
-      show(t('m_wm_vid', { n: 0 }));
-      try { b = await markVideo(b, n => show(t('m_wm_vid', { n }))); } catch (e) { toast(t('m_wm_fail'), 1); }
-      await freeLast('vid', p, b); toast(t('m_vid_ok'));
+      if (wm) {
+        show(t('m_wm_vid', { n: 0 }));
+        try {
+          const P = await wmPrep(b);
+          if (P.needTap) { pend = true; await freeLast('vid', p, b, false); S.freeDraft.last.wmPending = true; WMP = { id: S.freeDraft.last.media.id, P }; }
+          else { b = await wmRecord(P, n => show(t('m_wm_vid', { n }))); wmFree(P); }
+        } catch (e) { toast(t('m_wm_fail'), 1); }
+      }
+      if (!pend) await freeLast('vid', p, b, wm);
+      toast(t(pend ? 'm_wm_tap' : 'm_vid_ok'));
     } catch (e) { toast(t('m_vid_fail', { e: e.message }), 1); }
     FREE = { busy: false, status: '' }; save(); if (S.route === 'free') render();
+  },
+  /* Safari: the logo is burned in from this tap so the clip keeps its sound. Everything before wmRecord's play() runs inside the tap. */
+  freewm() {
+    const l = S.freeDraft.last; if (!l || !l.wmPending || FREE.busy) return;
+    if (!WMP || WMP.id !== l.media.id) {
+      const b = BLOBS.get(l.media.id); if (!b) return;
+      FREE = { busy: true, status: t('m_wm_vid', { n: 0 }) }; render();
+      wmPrep(b).then(P => { WMP = { id: l.media.id, P }; toast(t('m_wm_again')); }).catch(() => toast(t('m_wm_fail'), 1)).finally(() => { FREE = { busy: false, status: '' }; render(); });
+      return;
+    }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    try { if (AC && !WMCTX) WMCTX = new AC(); if (WMCTX && WMCTX.state !== 'running') WMCTX.resume(); } catch (e) { WMCTX = null; }
+    const P = WMP.P, show = n => { FREE.status = t('m_wm_vid', { n }); if (S.route === 'free') render(); };
+    let job;
+    try { job = wmRecord(P, show, WMCTX); } catch (e) { toast(t('m_wm_fail'), 1); return; }
+    FREE = { busy: true, status: t('m_wm_vid', { n: 0 }) }; render();
+    job.then(async b => {
+      wmFree(P); WMP = null;
+      const saved = l.saved && byId(S.free, l.saved);
+      await freeLast('vid', l.prompt, b, true);
+      if (saved) { orphan(saved.media.id); saved.media = { ...S.freeDraft.last.media }; S.freeDraft.last.saved = saved.id; }
+      toast(t('m_vid_ok'));
+    }).catch(() => toast(t('m_wm_fail'), 1)).finally(() => { FREE = { busy: false, status: '' }; save(); render(); });
   },
   freedl(d) { const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; } if (dl(b, freeName(it, b))) toast(t('fr_dl_ok')); },
   freesave() {
     const l = S.freeDraft.last; if (!l || l.saved) return;
-    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
+    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, wm: !!l.wm, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
     S.free.push(it); l.saved = it.id; save(); render(); toast(t('m_fr_saved'));
   },
   freedel(d) {

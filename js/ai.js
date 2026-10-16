@@ -108,8 +108,17 @@ async function aiImage(d) {
 }
 
 /* Free design: the description goes to the image model as written. */
+/* A short request becomes one precise English prompt; words that must appear stay in their own language and spelling, in quotes. */
+const FREE_SYS = 'You turn a short user request into one precise prompt for an AI {k} generation model. Write the prompt in English. Keep the user\'s intent exactly and add concrete details: subject, composition, style, colours, lighting{v}. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script), say it must be spelled exactly as written, large and legible, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a clean flat vector-style mark with the name, centered on a plain white background, no mockup, no extra symbols. Reply with the prompt only.';
+async function freePrompt(p, kind) {
+  if (!aiOn()) return p;
+  try {
+    const j = await orFetch('/chat/completions', { model: S.settings.txtModel, messages: [{ role: 'system', content: FREE_SYS.replace('{k}', kind === 'vid' ? 'video' : 'image').replace('{v}', kind === 'vid' ? ', camera movement and motion' : '') }, { role: 'user', content: p }] });
+    return ((j.choices[0].message.content || '').trim() || p) + (kind === 'vid' ? '' : '\nUser request (for reference): ' + p);
+  } catch (e) { return p; }
+}
 async function aiFreeImage(prompt) {
-  const j = await orFetch('/chat/completions', { model: S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const j = await orFetch('/chat/completions', { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
   const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
   if (!u) throw new Error(t('e_no_image'));
   return toBlob(u);
