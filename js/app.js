@@ -48,13 +48,26 @@ function brandCSS() {
   if (a) { lt += `--violet:${mixc(a, W, 0)};--violet-ink:${mixc(a, K, .3)};--violet-soft:${mixc(a, W, .88)};`; dk += `--violet:${mixc(a, W, .1)};--violet-ink:${mixc(a, W, .45)};--violet-soft:${mixc(a, D, .8)};`; }
   return `:root{${lt}}` + (b.dark ? `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${dk}}}:root[data-theme="dark"]{${dk}}` : '');
 }
+/* Day-theme background: drawn on a fixed layer behind the page so it stays put on phones too. Never in the night theme. */
+function bgCSS() {
+  const b = S.settings.brand || {}, veil = a => `linear-gradient(rgba(255,255,255,${a}),rgba(255,255,255,${a}))`;
+  const side = document.documentElement.dir === 'rtl' ? 'left' : 'right';
+  const v = {
+    balloon: `background:url(${BG_BALLOON}) no-repeat ${side} 20px bottom 16px/min(34vw,300px) auto`,
+    waves: `background:${veil(.35)},url(${BG_WAVES}) center/100% 100% no-repeat`,
+    soft: 'background:linear-gradient(135deg,#EAF5FB 0%,#FBFCFD 50%,#FDEFE6 100%)',
+    custom: b.bgImg ? `background:${veil(.3)},url("${b.bgImg}") center/cover no-repeat` : ''
+  }[b.bg];
+  if (!v) return '';
+  return `html:not([data-theme="dark"]) body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${v}}@media (prefers-color-scheme:dark){html:not([data-theme="light"]) body::before{display:none}}`;
+}
 function applyChrome() {
   const de = document.documentElement, th = S.settings.theme;
   de.lang = L(); de.dir = L() === 'ar' ? 'rtl' : 'ltr';
   if (th === 'light' || th === 'dark') de.dataset.theme = th; else delete de.dataset.theme;
   document.title = appName();
   let st = document.getElementById('brand-css'); if (!st) { st = document.createElement('style'); st.id = 'brand-css'; document.head.appendChild(st); }
-  const css = brandCSS(); if (st.textContent !== css) st.textContent = css;
+  const css = brandCSS() + bgCSS(); if (st.textContent !== css) st.textContent = css;
   let ico = document.querySelector('link[rel="icon"]'); if (!ico) { ico = document.createElement('link'); ico.rel = 'icon'; document.head.appendChild(ico); }
   const src = iconIsM() ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(M_ICON) : logoSrc(co().logo); if (ico.getAttribute('href') !== src) ico.setAttribute('href', src);
 }
@@ -371,6 +384,16 @@ const A = {
   iconstyle(d) { co().iconStyle = d.v === 'logo' ? 'logo' : 'gradient-m'; save(); render(); },
   logoreset(d) { co()[d.k] = DEFAULT_LOGO; save(); render(); },
   brandpreset() { S.settings.brand = { ...S.settings.brand, primary: '#1b8fbf', accent: '#f26a0f' }; save(); render(); },
+  bgset(d) { S.settings.brand.bg = d.v; save(); render(); },
+  async bgup(file) {
+    if (!file || !file.type.startsWith('image/')) { toast(t('m_ref_type'), 1); return; }
+    try {
+      const url = URL.createObjectURL(file), im = await loadImg(url); URL.revokeObjectURL(url);
+      const r = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      Object.assign(S.settings.brand, { bg: 'custom', bgImg: c.toDataURL('image/jpeg', .82) }); save(); render(); toast(t('m_saved_edit'));
+    } catch (e) { toast(t('m_export_fail'), 1); }
+  },
   brandreset() { S.settings.brand = { ...S.settings.brand, primary: '', accent: '' }; save(); render(); },
   socicondel(d) { if (S.settings.socIcons) delete S.settings.socIcons[d.k]; save(); render(); },
   addonadd() { S.addons.push({ id: rid('AO'), name: t('addon_new'), kind: 'images', mode: 'pack', amount: 10, price: 10, active: true }); save(); render(); },
@@ -536,6 +559,7 @@ document.addEventListener('keydown', e => {
 function bind(e) {
   const el = e.target;
   if (el.dataset.ref !== undefined) { if (e.type === 'change') A.refpick(el.files); return; }
+  if ('bgup' in el.dataset) { if (e.type === 'change') A.bgup(el.files[0]); return; }
   if (el.dataset.logo) { if (e.type === 'change') A.logoup(el.dataset.logo, el.files[0]); return; }
   if (el.dataset.logotext) { if (e.type === 'change') { const v = el.value.trim(); if (v && !/^(<svg[\s>]|https:\/\/)/i.test(v)) { toast(t('e_logo'), 1); return; } co()[el.dataset.logotext] = v || DEFAULT_LOGO; save(); render(); } return; }
   if (el.dataset.links !== undefined) {
@@ -568,7 +592,7 @@ function bind(e) {
   }
 }
 document.addEventListener('input', e => { if (e.target.type !== 'checkbox' && e.target.tagName !== 'SELECT') bind(e); });
-document.addEventListener('change', e => { const el = e.target; if (el.type === 'checkbox' || el.tagName === 'SELECT' || el.dataset.pl || el.dataset.ref !== undefined || el.dataset.scene !== undefined || el.dataset.re !== undefined || el.dataset.socicon || el.dataset.logo || el.dataset.logotext || el.dataset.links !== undefined) bind(e); });
+document.addEventListener('change', e => { const el = e.target; if (el.type === 'checkbox' || el.tagName === 'SELECT' || el.dataset.pl || el.dataset.ref !== undefined || el.dataset.scene !== undefined || el.dataset.re !== undefined || el.dataset.socicon || el.dataset.logo || el.dataset.bgup !== undefined || el.dataset.logotext || el.dataset.links !== undefined) bind(e); });
 
 /* ---------- boot ---------- */
 loadState();

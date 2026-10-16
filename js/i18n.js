@@ -217,6 +217,9 @@ Object.assign(I18N, {
   co_icon: ['أيقونة الترويسة والمتصفح', 'Header and browser icon'], co_icon_m: ['أيقونة تدرّج M', 'Gradient M icon'], co_icon_logo: ['الشعار الأصلي (المنطاد)', 'Original logo (balloon)'],
   brand_dark: ['تطبيق الألوان على الوضع الليلي أيضاً', 'Also apply the colours to the night theme'],
   brand_t: ['ألوان الواجهة', 'Interface colours'], brand_primary: ['اللون الأساسي', 'Primary colour'], brand_accent: ['اللون الثانوي', 'Secondary colour'], brand_logo: ['ألوان الشعار', 'Logo colours'], brand_sample: ['معاينة', 'Preview'],
+  bg_t: ['خلفية الوضع النهاري', 'Day theme background'],
+  bg_none: ['بدون', 'None'], bg_balloon: ['المنطاد', 'Balloon'], bg_waves: ['الموجات', 'Waves'], bg_soft: ['تدرّج هادئ', 'Soft gradient'], bg_custom: ['صورتي', 'My image'],
+  bg_note: ['تظهر في الوضع النهاري فقط. الصورة المرفوعة تُصغَّر وتُغطّى بطبقة بيضاء خفيفة ليبقى النص واضحاً.', 'Light theme only. An uploaded image is downscaled and gets a light white veil so text stays readable.'],
   brand_note: ['اللونان يُطبَّقان على الأزرار والروابط والشارات في الوضع النهاري، وفي الليلي إن فعّلت الخيار. لون الأزرار يُعتَم قليلاً عند الحاجة ليبقى النص الأبيض واضحاً. «الافتراضي» يرجع الألوان الأصلية.', 'Both colours apply to buttons, links and badges in light and dark mode. "Default" restores the original palette.']
 });
 const UI = { ar: {}, en: {} };

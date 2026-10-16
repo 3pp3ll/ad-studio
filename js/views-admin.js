@@ -127,7 +127,10 @@ V['a-settings'] = () => {
  <button class="btn" data-act="brandpreset">${t('brand_logo')}</button><button class="btn" data-act="brandreset">${t('co_default')}</button></div>
  <label class="row"><input type="checkbox" id="br-dark" data-m="settings.brand.dark" ${b.dark ? 'checked' : ''}> ${t('brand_dark')}</label>
  <div class="row"><button class="btn p" tabindex="-1">${t('brand_sample')}</button><span class="pill">${t('brand_sample')}</span><span class="pill v">${t('brand_sample')}</span></div>
- <p class="sub">${t('brand_note')}</p></div>`; })()}
+ <p class="sub">${t('brand_note')}</p>
+ <h3 style="margin-top:14px">${t('bg_t')}</h3>
+ <div class="row" role="group" aria-label="${esc(t('bg_t'))}">${['none', 'balloon', 'waves', 'soft', 'custom'].filter(k => k !== 'custom' || b.bgImg).map(k => `<button class="btn s${(b.bg || 'none') === k ? ' p' : ''}" data-act="bgset" data-v="${k}" aria-pressed="${(b.bg || 'none') === k}">${t('bg_' + k)}</button>`).join('')}<label class="btn s">${t('co_upload')}<input class="vh" id="bg-up" type="file" accept="image/*" data-bgup></label></div>
+ <p class="sub">${t('bg_note')}</p></div>`; })()}
  <div class="panel"><h2>${t('socic_t')}</h2>
  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${Object.keys(SOCIAL).map(k => { const has = !!(s.socIcons || {})[k]; return `<div class="socup"><span class="ico" aria-hidden="true">${socIcon(k)}</span><span class="sub" dir="ltr">${SOCIAL[k].n}</span><div class="row"><label class="btn s">${t('socic_up')}<input class="vh" id="si-${k}" type="file" accept="image/*" data-socicon="${k}"></label>${has ? `<button class="btn s d" data-act="socicondel" data-k="${k}">${t('b_del')}</button>` : ''}</div></div>`; }).join('')}</div>
  <p class="sub">${t('socic_note')}</p></div>
