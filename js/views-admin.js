@@ -128,6 +128,8 @@ V['a-settings'] = () => {
  <label class="row"><input type="checkbox" id="br-dark" data-m="settings.brand.dark" ${b.dark ? 'checked' : ''}> ${t('brand_dark')}</label>
  <div class="row"><button class="btn p" tabindex="-1">${t('brand_sample')}</button><span class="pill">${t('brand_sample')}</span><span class="pill v">${t('brand_sample')}</span></div>
  <p class="sub">${t('brand_note')}</p>
+ <h3 style="margin-top:14px">${t('page_t')}</h3>
+ <div class="row" role="group" aria-label="${esc(t('page_t'))}">${['white', 'mist', 'sand'].map(k => `<button class="btn s${(b.page || 'white') === k ? ' p' : ''}" data-act="pageset" data-v="${k}" aria-pressed="${(b.page || 'white') === k}">${t('page_' + k)}</button>`).join('')}</div>
  <h3 style="margin-top:14px">${t('bg_t')}</h3>
  <div class="row" role="group" aria-label="${esc(t('bg_t'))}">${['none', 'balloon', 'waves', 'soft', 'custom'].filter(k => k !== 'custom' || b.bgImg).map(k => `<button class="btn s${(b.bg || 'none') === k ? ' p' : ''}" data-act="bgset" data-v="${k}" aria-pressed="${(b.bg || 'none') === k}">${t('bg_' + k)}</button>`).join('')}<label class="btn s">${t('co_upload')}<input class="vh" id="bg-up" type="file" accept="image/*" data-bgup></label></div>
  <p class="sub">${t('bg_note')}</p></div>`; })()}

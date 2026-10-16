@@ -24,7 +24,7 @@ body{margin:0}img{max-width:100%}[hidden]{display:none!important}
   --err:#E07A7D; --err-ink:#F1A6A8; --err-soft:#3A1F21; color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
+body{background:var(--page,var(--bg));color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
 button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.4}
 h1{font-size:1.5rem;font-weight:700} h2{font-size:1.05rem;font-weight:500} h3{font-size:.95rem;font-weight:500}

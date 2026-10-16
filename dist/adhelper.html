@@ -40,7 +40,7 @@ body{margin:0}img{max-width:100%}[hidden]{display:none!important}
   --err:#E07A7D; --err-ink:#F1A6A8; --err-soft:#3A1F21; color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
+body{background:var(--page,var(--bg));color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7}
 button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.4}
 h1{font-size:1.5rem;font-weight:700} h2{font-size:1.05rem;font-weight:500} h3{font-size:.95rem;font-weight:500}
@@ -402,6 +402,7 @@ Object.assign(I18N, {
   co_icon: ['أيقونة الترويسة والمتصفح', 'Header and browser icon'], co_icon_m: ['أيقونة تدرّج M', 'Gradient M icon'], co_icon_logo: ['الشعار الأصلي (المنطاد)', 'Original logo (balloon)'],
   brand_dark: ['تطبيق الألوان على الوضع الليلي أيضاً', 'Also apply the colours to the night theme'],
   brand_t: ['ألوان الواجهة', 'Interface colours'], brand_primary: ['اللون الأساسي', 'Primary colour'], brand_accent: ['اللون الثانوي', 'Secondary colour'], brand_logo: ['ألوان الشعار', 'Logo colours'], brand_sample: ['معاينة', 'Preview'],
+  page_t: ['لون الصفحة (النهاري)', 'Page colour (light theme)'], page_white: ['أبيض', 'White'], page_mist: ['رمادي مزرق', 'Blue-grey'], page_sand: ['عاجي دافئ', 'Warm ivory'],
   bg_t: ['خلفية الوضع النهاري', 'Day theme background'],
   bg_none: ['بدون', 'None'], bg_balloon: ['المنطاد', 'Balloon'], bg_waves: ['الموجات', 'Waves'], bg_soft: ['تدرّج هادئ', 'Soft gradient'], bg_custom: ['صورتي', 'My image'],
   bg_note: ['تظهر في الوضع النهاري فقط. الصورة المرفوعة تُصغَّر وتُغطّى بطبقة بيضاء خفيفة ليبقى النص واضحاً.', 'Light theme only. An uploaded image is downscaled and gets a light white veil so text stays readable.'],
@@ -543,7 +544,7 @@ const logoSrc = v => {
    The two stops take their colour from --m1/--m2, which are slightly lighter in dark mode. */
 const M_ICON = '<svg xmlns="http://www.w3.org/2000/svg" class="mico" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="M"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="s1" stop-color="#F26A0F"/><stop offset="1" class="s2" stop-color="#1B8FBF"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#mg)"/><text x="16" y="16.5" text-anchor="middle" dominant-baseline="central" font-family="Alexandria,Arial,sans-serif" font-weight="700" font-size="19" fill="#fff">M</text></svg>';
 const iconIsM = () => co().iconStyle !== 'logo';
-const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '#1b8fbf', accent: '#f26a0f', dark: false, bg: 'balloon', bgImg: '', v: 3 } });
+const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '#1b8fbf', accent: '#f26a0f', dark: false, bg: 'balloon', bgImg: '', page: 'mist', v: 4 } });
 
 function seed() {
   const plans = [
@@ -667,6 +668,8 @@ function loadState() {
   if (!S.settings.brand.v) { if (!S.settings.brand.primary && !S.settings.brand.accent) Object.assign(S.settings.brand, { primary: '#1b8fbf', accent: '#f26a0f', dark: false }); S.settings.brand.v = 2; }
   /* v3: the balloon watermark becomes the default day background. */
   if (S.settings.brand.v < 3) Object.assign(S.settings.brand, { bg: 'balloon', bgImg: '', v: 3 });
+  /* v4: a soft blue-grey page instead of plain white. */
+  if (S.settings.brand.v < 4) Object.assign(S.settings.brand, { page: 'mist', v: 4 });
 }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S, (k, v) => k === 'dataURL' ? undefined : v)); }
@@ -1341,6 +1344,8 @@ V['a-settings'] = () => {
  <label class="row"><input type="checkbox" id="br-dark" data-m="settings.brand.dark" ${b.dark ? 'checked' : ''}> ${t('brand_dark')}</label>
  <div class="row"><button class="btn p" tabindex="-1">${t('brand_sample')}</button><span class="pill">${t('brand_sample')}</span><span class="pill v">${t('brand_sample')}</span></div>
  <p class="sub">${t('brand_note')}</p>
+ <h3 style="margin-top:14px">${t('page_t')}</h3>
+ <div class="row" role="group" aria-label="${esc(t('page_t'))}">${['white', 'mist', 'sand'].map(k => `<button class="btn s${(b.page || 'white') === k ? ' p' : ''}" data-act="pageset" data-v="${k}" aria-pressed="${(b.page || 'white') === k}">${t('page_' + k)}</button>`).join('')}</div>
  <h3 style="margin-top:14px">${t('bg_t')}</h3>
  <div class="row" role="group" aria-label="${esc(t('bg_t'))}">${['none', 'balloon', 'waves', 'soft', 'custom'].filter(k => k !== 'custom' || b.bgImg).map(k => `<button class="btn s${(b.bg || 'none') === k ? ' p' : ''}" data-act="bgset" data-v="${k}" aria-pressed="${(b.bg || 'none') === k}">${t('bg_' + k)}</button>`).join('')}<label class="btn s">${t('co_upload')}<input class="vh" id="bg-up" type="file" accept="image/*" data-bgup></label></div>
  <p class="sub">${t('bg_note')}</p></div>`; })()}
@@ -1551,6 +1556,8 @@ function brandCSS() {
   if (a) { lt += `--violet:${mixc(a, W, 0)};--violet-ink:${mixc(a, K, .3)};--violet-soft:${mixc(a, W, .88)};`; dk += `--violet:${mixc(a, W, .1)};--violet-ink:${mixc(a, W, .45)};--violet-soft:${mixc(a, D, .8)};`; }
   return `:root{${lt}}` + (b.dark ? `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${dk}}}:root[data-theme="dark"]{${dk}}` : '');
 }
+/* Day page tones: the page colour, cards and fields. 'white' keeps the original look. */
+const PAGE_TONES = { mist: { page: '#EDF2F6', surface: '#FFFFFF', bg: '#FAFCFD', line: '#DCE4EB' }, sand: { page: '#F5F1EA', surface: '#FFFDF9', bg: '#FFFFFF', line: '#E6DFD3' } };
 /* Day-theme background: drawn on a fixed layer behind the page so it stays put on phones too. Never in the night theme. */
 function bgCSS() {
   const b = S.settings.brand || {}, veil = a => `linear-gradient(rgba(255,255,255,${a}),rgba(255,255,255,${a}))`;
@@ -1561,8 +1568,10 @@ function bgCSS() {
     soft: 'background:linear-gradient(135deg,#EAF5FB 0%,#FBFCFD 50%,#FDEFE6 100%)',
     custom: b.bgImg ? `background:${veil(.3)},url("${b.bgImg}") center/cover no-repeat` : ''
   }[b.bg];
-  if (!v) return '';
-  return `html:not([data-theme="dark"]) body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${v}}@media (prefers-color-scheme:dark){html:not([data-theme="light"]) body::before{display:none}}`;
+  const tone = PAGE_TONES[b.page], day = x => `@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){${x}}}:root[data-theme="light"]{${x}}`;
+  const tc = tone ? day(Object.entries(tone).map(([k, c]) => `--${k}:${c}`).join(';')) : '';
+  if (!v) return tc;
+  return tc + `html:not([data-theme="dark"]) body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${v}}@media (prefers-color-scheme:dark){html:not([data-theme="light"]) body::before{display:none}}`;
 }
 function applyChrome() {
   const de = document.documentElement, th = S.settings.theme;
@@ -1887,6 +1896,7 @@ const A = {
   iconstyle(d) { co().iconStyle = d.v === 'logo' ? 'logo' : 'gradient-m'; save(); render(); },
   logoreset(d) { co()[d.k] = DEFAULT_LOGO; save(); render(); },
   brandpreset() { S.settings.brand = { ...S.settings.brand, primary: '#1b8fbf', accent: '#f26a0f' }; save(); render(); },
+  pageset(d) { S.settings.brand.page = d.v; save(); render(); },
   bgset(d) { S.settings.brand.bg = d.v; save(); render(); },
   async bgup(file) {
     if (!file || !file.type.startsWith('image/')) { toast(t('m_ref_type'), 1); return; }

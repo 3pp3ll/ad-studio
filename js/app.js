@@ -48,6 +48,8 @@ function brandCSS() {
   if (a) { lt += `--violet:${mixc(a, W, 0)};--violet-ink:${mixc(a, K, .3)};--violet-soft:${mixc(a, W, .88)};`; dk += `--violet:${mixc(a, W, .1)};--violet-ink:${mixc(a, W, .45)};--violet-soft:${mixc(a, D, .8)};`; }
   return `:root{${lt}}` + (b.dark ? `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${dk}}}:root[data-theme="dark"]{${dk}}` : '');
 }
+/* Day page tones: the page colour, cards and fields. 'white' keeps the original look. */
+const PAGE_TONES = { mist: { page: '#EDF2F6', surface: '#FFFFFF', bg: '#FAFCFD', line: '#DCE4EB' }, sand: { page: '#F5F1EA', surface: '#FFFDF9', bg: '#FFFFFF', line: '#E6DFD3' } };
 /* Day-theme background: drawn on a fixed layer behind the page so it stays put on phones too. Never in the night theme. */
 function bgCSS() {
   const b = S.settings.brand || {}, veil = a => `linear-gradient(rgba(255,255,255,${a}),rgba(255,255,255,${a}))`;
@@ -58,8 +60,10 @@ function bgCSS() {
     soft: 'background:linear-gradient(135deg,#EAF5FB 0%,#FBFCFD 50%,#FDEFE6 100%)',
     custom: b.bgImg ? `background:${veil(.3)},url("${b.bgImg}") center/cover no-repeat` : ''
   }[b.bg];
-  if (!v) return '';
-  return `html:not([data-theme="dark"]) body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${v}}@media (prefers-color-scheme:dark){html:not([data-theme="light"]) body::before{display:none}}`;
+  const tone = PAGE_TONES[b.page], day = x => `@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){${x}}}:root[data-theme="light"]{${x}}`;
+  const tc = tone ? day(Object.entries(tone).map(([k, c]) => `--${k}:${c}`).join(';')) : '';
+  if (!v) return tc;
+  return tc + `html:not([data-theme="dark"]) body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;${v}}@media (prefers-color-scheme:dark){html:not([data-theme="light"]) body::before{display:none}}`;
 }
 function applyChrome() {
   const de = document.documentElement, th = S.settings.theme;
@@ -384,6 +388,7 @@ const A = {
   iconstyle(d) { co().iconStyle = d.v === 'logo' ? 'logo' : 'gradient-m'; save(); render(); },
   logoreset(d) { co()[d.k] = DEFAULT_LOGO; save(); render(); },
   brandpreset() { S.settings.brand = { ...S.settings.brand, primary: '#1b8fbf', accent: '#f26a0f' }; save(); render(); },
+  pageset(d) { S.settings.brand.page = d.v; save(); render(); },
   bgset(d) { S.settings.brand.bg = d.v; save(); render(); },
   async bgup(file) {
     if (!file || !file.type.startsWith('image/')) { toast(t('m_ref_type'), 1); return; }
