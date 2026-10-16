@@ -208,7 +208,11 @@ V.account = () => {
  <div class="cols"><div class="panel"><h2>${t('acc_profile')}</h2>
  ${fld(t('f_name'), `<input id="ac-name" data-m="users.${i}.name" value="${esc(u.name)}" autocomplete="name">`)}
  ${fld(t('f_phone'), `<input id="ac-phone" dir="ltr" type="tel" data-m="users.${i}.phone" value="${esc(u.phone || '')}" autocomplete="tel">`)}
- ${fld(t('f_email'), `<input id="ac-email" dir="ltr" value="${esc(u.email)}" disabled>`)}</div>
+ ${fld(t('f_email'), `<input id="ac-email" dir="ltr" value="${esc(u.email)}" disabled>`)}
+ <form data-form="chpass" class="panel" style="padding:0" novalidate><h3>${t('pw_t')}</h3>${errBox()}${msgBox()}
+ ${fld(t('pw_cur'), '<input id="pw-cur" name="cur" type="password" dir="ltr" autocomplete="current-password">')}
+ ${fld(t('pw_new'), `<input id="pw-new" name="pass" type="password" dir="ltr" autocomplete="new-password"><span>${t('pass_hint')}</span>`)}
+ <button class="btn" style="align-self:start">${t('pw_save')}</button></form></div>
  <div class="panel"><h2>${t('theme')}</h2><div class="row">${thBtn('auto', 'auto')}${thBtn('light', 'sun')}${thBtn('dark', 'moon')}</div></div></div>
  <div class="panel"><h2>${t('soc_t')}</h2>
  <div class="row">${Object.keys(SOCIAL).map(socBtn).join('')}${soc.filter(a => a.key === 'custom').map(a => `<button class="ico" data-act="socedit" data-id="${a.id}" aria-pressed="true" title="${esc(a.name)}" aria-label="${esc(a.name)}"><span dir="auto">${esc(a.name)}</span></button>`).join('')}<button class="ico add" data-act="socadd" title="${t('soc_add')}" aria-label="${t('soc_add')}">${ic('plus')}</button></div>

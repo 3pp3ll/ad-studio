@@ -489,6 +489,13 @@ const F = {
     }
     render();
   },
+  async chpass(f) {
+    const u = cur(), pass = f.pass.value;
+    if (!(await checkPass(u, f.cur.value))) T = { err: t('pw_wrong'), msg: '' };
+    else if (!(pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /\d/.test(pass) && /[^A-Za-z0-9]/.test(pass))) T = { err: t('e_pass'), msg: '' };
+    else { const s = rid('s'); u.pw = { s, h: await sha(s + pass) }; T = { err: '', msg: t('pw_done') }; save(); }
+    render();
+  },
   async login(f) {
     const u = S.users.find(u => u.email === f.email.value.trim().toLowerCase());
     T.msg = '';

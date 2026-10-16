@@ -398,6 +398,7 @@ Object.assign(I18N, {
   co_tagline: ['شعار نصي للشركة (يُظهر صفحة «عن الشركة»)', 'Company tagline (turns on the About page)'], co_aboutlead: ['السطر الأول في صفحة «عن الشركة»', 'First line of the About page'], co_about: ['نص صفحة «عن الشركة»', 'About page text'], co_fnote: ['نص إضافي في التذييل', 'Extra footer note'],
   co_links: ['روابط التذييل (JSON) مثل [{"label":"المدونة","href":"https://..."}]', 'Footer links (JSON) e.g. [{"label":"Blog","href":"https://..."}]'], co_terms: ['نص الشروط والأحكام', 'Terms text'], co_privacy: ['نص سياسة الخصوصية', 'Privacy policy text'], co_showlegal: ['إظهار الصفحات القانونية في التذييل', 'Show the legal pages in the footer'],
   e_logo: ['اكتب كود SVG يبدأ بـ <svg أو رابطاً يبدأ بـ https://', 'Enter SVG code starting with <svg or a link starting with https://'], e_links: ['صيغة الروابط غير صحيحة. كل رابط يحتاج label و href يبدأ بـ https://', 'The links format is invalid. Each link needs a label and an href starting with https://'],
+  pw_t: ['تغيير كلمة المرور', 'Change password'], pw_cur: ['كلمة المرور الحالية', 'Current password'], pw_new: ['كلمة المرور الجديدة', 'New password'], pw_save: ['حفظ كلمة المرور', 'Save password'], pw_wrong: ['كلمة المرور الحالية غير صحيحة.', 'The current password is wrong.'], pw_done: ['تم تغيير كلمة المرور.', 'Password changed.'],
   co_icon: ['أيقونة الترويسة والمتصفح', 'Header and browser icon'], co_icon_m: ['أيقونة تدرّج M', 'Gradient M icon'], co_icon_logo: ['الشعار الأصلي (المنطاد)', 'Original logo (balloon)'],
   brand_t: ['ألوان الواجهة', 'Interface colours'], brand_primary: ['اللون الأساسي', 'Primary colour'], brand_accent: ['اللون الثانوي', 'Secondary colour'], brand_logo: ['ألوان الشعار', 'Logo colours'], brand_sample: ['معاينة', 'Preview'],
   brand_note: ['اللونان يُطبَّقان على الأزرار والروابط والشارات في الوضعين الفاتح والداكن. «الافتراضي» يرجع ألوان الهوية الأصلية.', 'Both colours apply to buttons, links and badges in light and dark mode. "Default" restores the original palette.']
@@ -1177,7 +1178,11 @@ V.account = () => {
  <div class="cols"><div class="panel"><h2>${t('acc_profile')}</h2>
  ${fld(t('f_name'), `<input id="ac-name" data-m="users.${i}.name" value="${esc(u.name)}" autocomplete="name">`)}
  ${fld(t('f_phone'), `<input id="ac-phone" dir="ltr" type="tel" data-m="users.${i}.phone" value="${esc(u.phone || '')}" autocomplete="tel">`)}
- ${fld(t('f_email'), `<input id="ac-email" dir="ltr" value="${esc(u.email)}" disabled>`)}</div>
+ ${fld(t('f_email'), `<input id="ac-email" dir="ltr" value="${esc(u.email)}" disabled>`)}
+ <form data-form="chpass" class="panel" style="padding:0" novalidate><h3>${t('pw_t')}</h3>${errBox()}${msgBox()}
+ ${fld(t('pw_cur'), '<input id="pw-cur" name="cur" type="password" dir="ltr" autocomplete="current-password">')}
+ ${fld(t('pw_new'), `<input id="pw-new" name="pass" type="password" dir="ltr" autocomplete="new-password"><span>${t('pass_hint')}</span>`)}
+ <button class="btn" style="align-self:start">${t('pw_save')}</button></form></div>
  <div class="panel"><h2>${t('theme')}</h2><div class="row">${thBtn('auto', 'auto')}${thBtn('light', 'sun')}${thBtn('dark', 'moon')}</div></div></div>
  <div class="panel"><h2>${t('soc_t')}</h2>
  <div class="row">${Object.keys(SOCIAL).map(socBtn).join('')}${soc.filter(a => a.key === 'custom').map(a => `<button class="ico" data-act="socedit" data-id="${a.id}" aria-pressed="true" title="${esc(a.name)}" aria-label="${esc(a.name)}"><span dir="auto">${esc(a.name)}</span></button>`).join('')}<button class="ico add" data-act="socadd" title="${t('soc_add')}" aria-label="${t('soc_add')}">${ic('plus')}</button></div>
@@ -1967,6 +1972,13 @@ const F = {
       const s = rid('s'), u = newUser({ name, email, phone: f.phone.value.trim(), pw: { s, h: await sha(s + pass) } });
       S.users.push(u); S.uid = u.id; return go('home');
     }
+    render();
+  },
+  async chpass(f) {
+    const u = cur(), pass = f.pass.value;
+    if (!(await checkPass(u, f.cur.value))) T = { err: t('pw_wrong'), msg: '' };
+    else if (!(pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /\d/.test(pass) && /[^A-Za-z0-9]/.test(pass))) T = { err: t('e_pass'), msg: '' };
+    else { const s = rid('s'); u.pw = { s, h: await sha(s + pass) }; T = { err: '', msg: t('pw_done') }; save(); }
     render();
   },
   async login(f) {
