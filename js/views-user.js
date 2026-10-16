@@ -13,6 +13,8 @@ const IC = {
   broom: 'M14 3l7 7M13 5l6 6-3.5 3.5-6-6zM9.5 8.5L3.5 14c.8 3.8 3.4 6 7.5 6.5l5-6M6.5 13.5l4 4M9 11l4 4',
   receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   share: 'M16 6l-4-3-4 3M12 3v12M6 11H5v9h14v-9h-1',
+  wand: 'M5 19L15 9M14 4v3M12.5 5.5h3M19 8v3M17.5 9.5h3M19 15v2M18 16h2', dl: 'M12 4v11M8 11l4 4 4-4M5 19h14',
+  mark: 'M7 4h10v16l-5-4-5 4z', trash: 'M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13',
   film: 'M4 5h16v14H4zM8 5v14M16 5v14M4 9h4M4 15h4M16 9h4M16 15h4',
   moon: 'M20 14a8 8 0 1 1-10-10 6.5 6.5 0 0 0 10 10z', auto: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v18M12 7l5 0M12 12l8 0M12 17l5 0'
 };
@@ -147,6 +149,26 @@ V.scenes = () => {
  <div class="bar"><i id="stagebar" style="width:0"></i></div>
  <div class="row"><button class="btn p" data-act="scplay" ${sc.items.length ? '' : 'disabled'}>${t('sc_play')}</button><button class="btn" data-act="scstop">${t('sc_stop')}</button></div>
  <p class="sub">${t('sc_note')}</p></div></div>`;
+};
+
+/* Free design: one description, an image or a video, the logo added in the corner. */
+const freeMedia = (it, cls = 'shot') => { const src = MEDIA.get(it.media.id); return !src ? `<div class="thumb">${t('sc_missing')}</div>` : it.kind === 'vid' ? `<video class="${cls}" controls playsinline preload="metadata" src="${src}#t=0.1"></video>` : `<img class="${cls}" src="${src}" alt="${esc(it.prompt)}">`; };
+const icoAct = (act, id, icon, label, extra = '') => `<button class="ico sm" data-act="${act}" data-id="${id}" title="${esc(label)}" aria-label="${esc(label)}" ${extra}>${ic(icon)}</button>`;
+V.free = () => {
+  const u = cur(), f = S.freeDraft, l = f.last, mine = freeOf(u).sort((a, b) => b.date.localeCompare(a.date)), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+  return `<div class="head"><div><h1>${t('nav_free')}</h1><p class="sub">${t('fr_sub')}</p></div><div class="row"><span class="pill v">${t('imgs_avail', { n: left(u, 'images') })}</span><span class="pill v">${t('vids_avail', { n: left(u, 'vidSecs') })}</span></div></div>
+ <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
+ <div class="cols"><div class="panel">${errBox()}
+ ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
+ <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
+ ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
+ <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) : t('fr_offline')}</p></div>
+ <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}
+ <div class="row"><button class="btn p" data-act="freedl" data-id="last">${ic('dl')} ${t('fr_dl')}</button><button class="btn" data-act="freesave" ${l.saved ? 'disabled' : ''}>${ic('mark')} ${t(l.saved ? 'fr_saved' : 'fr_save')}</button></div>
+ <div class="row">${icoAct('freeexp', 'last', 'share', t('fr_exp'))}<span class="sub">${t('fr_exp')}</span></div>` : `<p class="sub">${t('fr_empty')}</p>`}</div></div>
+ <h2>${t('fr_lib')}</h2>
+ ${mine.length ? `<div class="grid frlib" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">${mine.map(it => `<article class="panel" style="gap:8px">${freeMedia(it, 'shot')}<p class="sub" dir="auto" style="margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(it.prompt)}</p>
+ <div class="row" style="justify-content:space-between"><span class="sub">${fdate(it.date)} · ${fmtSize(it.media.size)}</span><span class="row">${icoAct('freedl', it.id, 'dl', t('fr_dl'))}${icoAct('freeexp', it.id, 'share', t('fr_exp'))}${icoAct('freedel', it.id, 'trash', t('b_del'))}</span></div></article>`).join('')}</div>` : `<div class="panel"><p class="sub">${t('fr_lib_empty')}</p></div>`}`;
 };
 
 V.library = () => {

@@ -14,7 +14,7 @@ const GOAL_K = ['sales', 'launch', 'followers', 'visits'];
 const CAT_K = ['general', 'decor', 'furniture', 'fashion', 'food', 'beauty', 'electronics', 'realestate', 'services', 'kids'];
 const STORE_DEF = { free: 150, mid: 500, gold: 1000 };
 const LANG_K = ['ar', 'en', 'zh', 'ko', 'ja', 'es', 'pt', 'fr'];
-const USER_R = ['home', 'create', 'image', 'video', 'scenes', 'library', 'suggest', 'campaigns', 'plans', 'account'];
+const USER_R = ['home', 'create', 'image', 'video', 'scenes', 'free', 'library', 'suggest', 'campaigns', 'plans', 'account'];
 const ADMIN_R = ['a-home', 'a-users', 'a-plans', 'a-ads', 'a-sugg', 'a-errors', 'a-usage', 'a-campaigns', 'a-fin', 'a-settings'];
 const ROLES = {
   'Super Admin': ADMIN_R,
@@ -68,9 +68,14 @@ const calcBytes = a => {
   return [...sizes.values()].reduce((n, v) => n + v, 0)
     + enc.encode(JSON.stringify([a.text, a.titles, a.tags, a.variants || 0, a.refNote || '', a.scenes ? [a.scenes.script, a.scenes.items.map(i => i.cap)] : 0])).length;
 };
+/* Free designs: saved items, plus the latest unsaved result on the page. */
+const freeOf = u => (S.free || []).filter(f => f.uid === u.id);
+const freeBytes = f => (f.media.size || 0) + enc.encode(JSON.stringify([f.prompt, f.caption || '', f.tags || ''])).length;
 const adBytes = a => a.bytes != null ? a.bytes : calcBytes(a);
 const usedBytes = u => {
-  let n = S.ads.filter(a => a.uid === u.id).reduce((n, a) => n + adBytes(a), 0);
+  let n = S.ads.filter(a => a.uid === u.id).reduce((n, a) => n + adBytes(a), 0) + freeOf(u).reduce((n, f) => n + freeBytes(f), 0);
+  const fl = S.freeDraft && S.freeDraft.last;
+  if (fl && !fl.saved && u.id === S.uid) n += fl.media.size || 0;
   if (S.draft && u.id === S.uid) { const seen = new Set(); mediaObjs(S.draft).forEach(m => { if (!seen.has(m.id) && !owned(m.id)) { seen.add(m.id); n += m.size || 0; } }); }
   return n;
 };
@@ -230,6 +235,7 @@ function loadState() {
   let o = null;
   try { o = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
   S = migrate(o) || seed();
+  S.free = S.free || []; S.freeDraft = S.freeDraft || { prompt: '', last: null };
   S.settings.company = { ...defaultCompany(), ...(S.settings.company || {}) };
   S.settings.brand = { primary: '', accent: '', dark: false, ...(S.settings.brand || {}) };
   /* v2: the day theme uses the identity colours by default (once; a later reset to the original palette is kept). */

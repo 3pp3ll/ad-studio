@@ -170,6 +170,7 @@ span.ico{cursor:default}.socup{display:flex;flex-direction:column;gap:6px;align-
 :root[data-theme="dark"]{--m1:#F37927;--m2:#329AC5}
 .mico{display:block;flex:none}.mico .s1{stop-color:var(--m1)}.mico .s2{stop-color:var(--m2)}
 .btn[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.frlib .shot{width:100%;aspect-ratio:1;object-fit:cover;background:var(--line);border-radius:10px}
 
 </style>
 </head>
@@ -403,6 +404,25 @@ Object.assign(I18N, {
   brand_dark: ['تطبيق الألوان على الوضع الليلي أيضاً', 'Also apply the colours to the night theme'],
   brand_t: ['ألوان الواجهة', 'Interface colours'], brand_primary: ['اللون الأساسي', 'Primary colour'], brand_accent: ['اللون الثانوي', 'Secondary colour'], brand_logo: ['ألوان الشعار', 'Logo colours'], brand_sample: ['معاينة', 'Preview'],
   page_t: ['لون الصفحة (النهاري)', 'Page colour (light theme)'], page_white: ['أبيض', 'White'], page_mist: ['رمادي مزرق', 'Blue-grey'], page_sand: ['عاجي دافئ', 'Warm ivory'],
+  nav_free: ['تصميم حر', 'Free design'], fr_sub: ['اكتب فكرتك وولّد صورة أو فيديو مباشرة، بدون إعدادات إضافية.', 'Describe your idea and generate an image or a video directly, no extra settings.'],
+  fr_prompt: ['موضوع التصميم / وصف الصورة أو الفيديو', 'Design topic / image or video description'],
+  fr_genimg: ['توليد صورة', 'Generate image'], fr_genvid: ['توليد فيديو', 'Generate video'],
+  fr_vidinfo: ['الفيديو عمودي 9:16 ومدته {n} ثوانٍ. يُضاف شعار الشركة في الزاوية تلقائياً.', 'Videos are vertical 9:16 and {n} seconds long. The company logo is added in the corner automatically.'],
+  fr_offline: ['بدون ربط OpenRouter تُنشأ بطاقة بسيطة بالنص للتجربة فقط، والفيديو غير متاح.', 'Without the OpenRouter link you get a simple text card for trying the page; video is unavailable.'],
+  fr_note: ['أي محتوى يُصمَّم عبر هذه الصفحة لا تضيف عليه الصفحة أي وسم أو علامة «ذكاء اصطناعي»؛ العلامة الوحيدة هي شعار {brand} في زاوية الصورة أو الفيديو.', 'This page adds no "AI" label or tag to anything designed here; the only mark is the {brand} logo in the corner of the image or video.'],
+  fr_note2: ['تنبيه: بعض مزوّدي النماذج يضعون علامة رقمية غير مرئية داخل الملف، وبعض المنصات تطلب الإفصاح عن المحتوى المولَّد بالذكاء الاصطناعي.', 'Note: some model providers embed an invisible digital watermark in the file, and some platforms require disclosing AI-generated content.'],
+  fr_empty: ['اكتب الوصف ثم اضغط «توليد صورة» أو «توليد فيديو».', 'Write the description, then press "Generate image" or "Generate video".'],
+  fr_dl: ['حفظ على الجهاز', 'Save to device'], fr_dl_ok: ['تم الحفظ على الجهاز', 'Saved to your device'],
+  fr_save: ['حفظ في الصفحة', 'Save to page'], fr_saved: ['محفوظ في مكتبتك', 'Saved in your library'], m_fr_saved: ['حُفظ التصميم في مكتبة التصميم الحر.', 'Saved to the free design library.'],
+  fr_exp: ['تصدير كمحتوى', 'Export as content'], fr_lib: ['مكتبة التصميم الحر', 'Free design library'], fr_lib_empty: ['لا توجد تصاميم محفوظة بعد.', 'No saved designs yet.'],
+  fr_del_t: ['حذف التصميم', 'Delete design'], fr_del_b: ['سيُحذف هذا التصميم من مكتبتك نهائياً.', 'This design will be removed from your library permanently.'],
+  e_need_prompt: ['اكتب موضوع التصميم أولاً.', 'Describe the design first.'],
+  fx_plat: ['المنصة', 'Platform'], fx_cap: ['الوصف (اختياري)', 'Caption (optional)'], fx_tags: ['الهاشتاقات (اختياري)', 'Hashtags (optional)'],
+  fx_sug: ['اقتراح وصف وهاشتاقات', 'Suggest a caption and hashtags'], fx_post: ['مشاركة / نشر', 'Share / post'],
+  fx_note: ['على الجوال تفتح قائمة المشاركة لتختار التطبيق مباشرة. على الكمبيوتر يُحفظ الملف وتُفتح المنصة لترفعه. الوصف والهاشتاقات تُنسخ تلقائياً، فالصقها إذا لم تظهر.', 'On a phone the share sheet opens so you can pick the app. On a computer the file downloads and the platform opens for you to upload it. The caption and hashtags are copied, so paste them if they do not appear.'],
+  fx_desk: ['حُفظ الملف ونُسخ النص. ارفع الملف في المنصة والصق النص.', 'File downloaded and text copied. Upload the file on the platform and paste the text.'],
+  m_wm_vid: ['جارٍ إضافة الشعار على الفيديو… {n}%', 'Adding the logo to the video… {n}%'],
+  m_wm_fail: ['تعذّر إضافة الشعار في هذا المتصفح، فحُفظ الملف بدونه.', 'Could not add the logo in this browser, so the file was kept without it.'],
   bg_t: ['خلفية الوضع النهاري', 'Day theme background'],
   bg_none: ['بدون', 'None'], bg_balloon: ['المنطاد', 'Balloon'], bg_waves: ['الموجات', 'Waves'], bg_soft: ['تدرّج هادئ', 'Soft gradient'], bg_custom: ['صورتي', 'My image'],
   bg_note: ['تظهر في الوضع النهاري فقط. الصورة المرفوعة تُصغَّر وتُغطّى بطبقة بيضاء خفيفة ليبقى النص واضحاً.', 'Light theme only. An uploaded image is downscaled and gets a light white veil so text stays readable.'],
@@ -446,7 +466,7 @@ const GOAL_K = ['sales', 'launch', 'followers', 'visits'];
 const CAT_K = ['general', 'decor', 'furniture', 'fashion', 'food', 'beauty', 'electronics', 'realestate', 'services', 'kids'];
 const STORE_DEF = { free: 150, mid: 500, gold: 1000 };
 const LANG_K = ['ar', 'en', 'zh', 'ko', 'ja', 'es', 'pt', 'fr'];
-const USER_R = ['home', 'create', 'image', 'video', 'scenes', 'library', 'suggest', 'campaigns', 'plans', 'account'];
+const USER_R = ['home', 'create', 'image', 'video', 'scenes', 'free', 'library', 'suggest', 'campaigns', 'plans', 'account'];
 const ADMIN_R = ['a-home', 'a-users', 'a-plans', 'a-ads', 'a-sugg', 'a-errors', 'a-usage', 'a-campaigns', 'a-fin', 'a-settings'];
 const ROLES = {
   'Super Admin': ADMIN_R,
@@ -500,9 +520,14 @@ const calcBytes = a => {
   return [...sizes.values()].reduce((n, v) => n + v, 0)
     + enc.encode(JSON.stringify([a.text, a.titles, a.tags, a.variants || 0, a.refNote || '', a.scenes ? [a.scenes.script, a.scenes.items.map(i => i.cap)] : 0])).length;
 };
+/* Free designs: saved items, plus the latest unsaved result on the page. */
+const freeOf = u => (S.free || []).filter(f => f.uid === u.id);
+const freeBytes = f => (f.media.size || 0) + enc.encode(JSON.stringify([f.prompt, f.caption || '', f.tags || ''])).length;
 const adBytes = a => a.bytes != null ? a.bytes : calcBytes(a);
 const usedBytes = u => {
-  let n = S.ads.filter(a => a.uid === u.id).reduce((n, a) => n + adBytes(a), 0);
+  let n = S.ads.filter(a => a.uid === u.id).reduce((n, a) => n + adBytes(a), 0) + freeOf(u).reduce((n, f) => n + freeBytes(f), 0);
+  const fl = S.freeDraft && S.freeDraft.last;
+  if (fl && !fl.saved && u.id === S.uid) n += fl.media.size || 0;
   if (S.draft && u.id === S.uid) { const seen = new Set(); mediaObjs(S.draft).forEach(m => { if (!seen.has(m.id) && !owned(m.id)) { seen.add(m.id); n += m.size || 0; } }); }
   return n;
 };
@@ -662,6 +687,7 @@ function loadState() {
   let o = null;
   try { o = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
   S = migrate(o) || seed();
+  S.free = S.free || []; S.freeDraft = S.freeDraft || { prompt: '', last: null };
   S.settings.company = { ...defaultCompany(), ...(S.settings.company || {}) };
   S.settings.brand = { primary: '', accent: '', dark: false, ...(S.settings.brand || {}) };
   /* v2: the day theme uses the identity colours by default (once; a later reset to the original palette is kept). */
@@ -736,9 +762,9 @@ async function mload() {
   } catch (e) { DB = null; }
 }
 
-const owned = id => S.ads.some(a => mediaIds(a).includes(id));
+const owned = id => S.ads.some(a => mediaIds(a).includes(id)) || (S.free || []).some(f => f.media.id === id);
 /* Deletes a file once neither a saved ad nor the open draft uses it. */
-const orphan = id => { if (id && !owned(id) && !mediaIds(S.draft).includes(id)) mdel(id); };
+const orphan = id => { if (id && !owned(id) && !mediaIds(S.draft).includes(id) && !(S.freeDraft && S.freeDraft.last && S.freeDraft.last.media.id === id)) mdel(id); };
 
 async function toBlob(u) {
   if (!u.startsWith('data:')) return (await fetch(u)).blob();
@@ -842,6 +868,65 @@ async function shrinkFile(file, max = 1600) {
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     return await new Promise(ok => c.toBlob(b => ok(b || file), 'image/jpeg', .88));
   } catch (e) { return file; }
+}
+
+/* ---------- free design: the logo watermark ---------- */
+const wmLogo = () => loadImg(logoSrc(co().logo));
+/* Logo in the bottom corner, about 11% of the short side, with a soft shadow so it reads on light and dark pictures. */
+function drawMark(x, w, h, lg) {
+  const s = Math.round(Math.min(w, h) * .11), m = Math.round(Math.min(w, h) * .035), k = s / Math.max(lg.width, lg.height);
+  x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = Math.max(2, s * .1); x.globalAlpha = .92;
+  x.drawImage(lg, w - m - lg.width * k, h - m - lg.height * k, lg.width * k, lg.height * k); x.restore();
+}
+async function markImage(blob) {
+  const lg = await wmLogo(), url = URL.createObjectURL(blob);
+  try {
+    const im = await loadImg(url), c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0); drawMark(x, c.width, c.height, lg);
+    return await new Promise(ok => c.toBlob(ok, 'image/jpeg', .92));
+  } finally { URL.revokeObjectURL(url); }
+}
+/* Re-records the clip through a canvas with the logo on top. Plays muted; the sound is taken from the element's own stream where the browser offers one. */
+async function markVideo(blob, onStatus) {
+  const type = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+  if (!type || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
+  const lg = await wmLogo(), url = URL.createObjectURL(blob), v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+  try {
+    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
+    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+    const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
+    const src = v.captureStream ? v.captureStream() : v.mozCaptureStream ? v.mozCaptureStream() : null;
+    /* Start once so the element's tracks exist, then rewind and record from the first frame. */
+    await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
+    draw();
+    const out = new MediaStream([...c.captureStream(30).getVideoTracks(), ...(src ? src.getAudioTracks() : [])]);
+    const rec = new MediaRecorder(out, { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
+    rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
+    const done = new Promise(ok => { rec.onstop = ok; });
+    let on = true;
+    const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
+    rec.start(500); await v.play(); loop();
+    const total = v.duration || 15, tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
+    await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
+    on = false; clearInterval(tick); draw(); rec.stop(); await done;
+    return new Blob(parts, { type: type.split(';')[0] });
+  } finally { v.pause(); v.removeAttribute('src'); URL.revokeObjectURL(url); }
+}
+/* Without the OpenRouter link: a plain brand card carrying the description, for trying the page. */
+function freePoster(text) {
+  const c = document.createElement('canvas'), W = 1080; c.width = c.height = W;
+  const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, W, W), b = S.settings.brand || {};
+  g.addColorStop(0, b.primary || '#1b8fbf'); g.addColorStop(1, b.accent || '#f26a0f');
+  x.fillStyle = g; x.fillRect(0, 0, W, W);
+  const ar = /[؀-ۿ]/.test(text); x.direction = ar ? 'rtl' : 'ltr'; x.textAlign = 'center'; x.fillStyle = '#fff';
+  x.font = '600 58px "IBM Plex Sans Arabic", Tahoma, sans-serif';
+  const words = text.split(/\s+/), lines = []; let ln = '';
+  for (const w of words) { const tl = ln ? ln + ' ' + w : w; if (x.measureText(tl).width > W * .78 && ln) { lines.push(ln); ln = w; } else ln = tl; }
+  if (ln) lines.push(ln);
+  const shown = lines.slice(0, 8), lh = 84, y0 = W / 2 - (shown.length - 1) * lh / 2;
+  shown.forEach((l, i) => x.fillText(i === 7 && lines.length > 8 ? l + '…' : l, W / 2, y0 + i * lh + 20));
+  return c.toDataURL('image/png');
 }
 
 </script>
@@ -955,6 +1040,14 @@ async function aiImage(d) {
   return toBlob(u);
 }
 
+/* Free design: the description goes to the image model as written. */
+async function aiFreeImage(prompt) {
+  const j = await orFetch('/chat/completions', { model: S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
+  if (!u) throw new Error(t('e_no_image'));
+  return toBlob(u);
+}
+
 /* Video: async job. The first frame is the designed still (decor mode) or the first attachment;
    if the model refuses the frame, retry text-only. */
 async function aiVideo(d, onStatus, secs, firstFrame) {
@@ -1000,6 +1093,8 @@ const IC = {
   broom: 'M14 3l7 7M13 5l6 6-3.5 3.5-6-6zM9.5 8.5L3.5 14c.8 3.8 3.4 6 7.5 6.5l5-6M6.5 13.5l4 4M9 11l4 4',
   receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   share: 'M16 6l-4-3-4 3M12 3v12M6 11H5v9h14v-9h-1',
+  wand: 'M5 19L15 9M14 4v3M12.5 5.5h3M19 8v3M17.5 9.5h3M19 15v2M18 16h2', dl: 'M12 4v11M8 11l4 4 4-4M5 19h14',
+  mark: 'M7 4h10v16l-5-4-5 4z', trash: 'M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13',
   film: 'M4 5h16v14H4zM8 5v14M16 5v14M4 9h4M4 15h4M16 9h4M16 15h4',
   moon: 'M20 14a8 8 0 1 1-10-10 6.5 6.5 0 0 0 10 10z', auto: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v18M12 7l5 0M12 12l8 0M12 17l5 0'
 };
@@ -1136,6 +1231,26 @@ V.scenes = () => {
  <p class="sub">${t('sc_note')}</p></div></div>`;
 };
 
+/* Free design: one description, an image or a video, the logo added in the corner. */
+const freeMedia = (it, cls = 'shot') => { const src = MEDIA.get(it.media.id); return !src ? `<div class="thumb">${t('sc_missing')}</div>` : it.kind === 'vid' ? `<video class="${cls}" controls playsinline preload="metadata" src="${src}#t=0.1"></video>` : `<img class="${cls}" src="${src}" alt="${esc(it.prompt)}">`; };
+const icoAct = (act, id, icon, label, extra = '') => `<button class="ico sm" data-act="${act}" data-id="${id}" title="${esc(label)}" aria-label="${esc(label)}" ${extra}>${ic(icon)}</button>`;
+V.free = () => {
+  const u = cur(), f = S.freeDraft, l = f.last, mine = freeOf(u).sort((a, b) => b.date.localeCompare(a.date)), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+  return `<div class="head"><div><h1>${t('nav_free')}</h1><p class="sub">${t('fr_sub')}</p></div><div class="row"><span class="pill v">${t('imgs_avail', { n: left(u, 'images') })}</span><span class="pill v">${t('vids_avail', { n: left(u, 'vidSecs') })}</span></div></div>
+ <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
+ <div class="cols"><div class="panel">${errBox()}
+ ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
+ <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
+ ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
+ <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) : t('fr_offline')}</p></div>
+ <div class="panel"><h2>${t('results')}</h2>${l ? `${freeMedia(l)}
+ <div class="row"><button class="btn p" data-act="freedl" data-id="last">${ic('dl')} ${t('fr_dl')}</button><button class="btn" data-act="freesave" ${l.saved ? 'disabled' : ''}>${ic('mark')} ${t(l.saved ? 'fr_saved' : 'fr_save')}</button></div>
+ <div class="row">${icoAct('freeexp', 'last', 'share', t('fr_exp'))}<span class="sub">${t('fr_exp')}</span></div>` : `<p class="sub">${t('fr_empty')}</p>`}</div></div>
+ <h2>${t('fr_lib')}</h2>
+ ${mine.length ? `<div class="grid frlib" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">${mine.map(it => `<article class="panel" style="gap:8px">${freeMedia(it, 'shot')}<p class="sub" dir="auto" style="margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(it.prompt)}</p>
+ <div class="row" style="justify-content:space-between"><span class="sub">${fdate(it.date)} · ${fmtSize(it.media.size)}</span><span class="row">${icoAct('freedl', it.id, 'dl', t('fr_dl'))}${icoAct('freeexp', it.id, 'share', t('fr_exp'))}${icoAct('freedel', it.id, 'trash', t('b_del'))}</span></div></article>`).join('')}</div>` : `<div class="panel"><p class="sub">${t('fr_lib_empty')}</p></div>`}`;
+};
+
 V.library = () => {
   const u = cur(), f = S.filt, days = { all: 1e9, today: 1, week: 7, month: 30 }[f.date];
   const ads = S.ads.filter(a => a.uid === u.id && (f.plat === 'all' || a.platform === f.plat) && (f.style === 'all' || a.style === f.style) && (Date.now() - new Date(a.date)) < days * 864e5).sort((a, b) => b.date.localeCompare(a.date));
@@ -1222,7 +1337,7 @@ function fin() {
   const or = texts * .02, imgCost = images * .15, stripe = mp.reduce((a, p) => a + p.amount * .029 + 1, 0);
   return { today: sum('d'), month, year: sum('y'), subs: S.users.filter(u => planOf(u).price > 0).length, images, or, imgCost, stripe, net: month - or - imgCost - stripe, perUser: S.users.length ? (or + imgCost) / S.users.length : 0 };
 }
-const NAV_U = [['home', 'home'], ['create', 'plus'], ['image', 'image'], ['video', 'video'], ['scenes', 'film'], ['library', 'lib'], ['suggest', 'msg'], ['campaigns', 'book'], ['plans', 'card'], ['account', 'gear']];
+const NAV_U = [['home', 'home'], ['create', 'plus'], ['image', 'image'], ['video', 'video'], ['scenes', 'film'], ['free', 'wand'], ['library', 'lib'], ['suggest', 'msg'], ['campaigns', 'book'], ['plans', 'card'], ['account', 'gear']];
 const NAV_A = [['a-home', 'home'], ['a-users', 'users'], ['a-plans', 'card'], ['a-ads', 'lib'], ['a-sugg', 'msg'], ['a-errors', 'bug'], ['a-usage', 'chart'], ['a-campaigns', 'book'], ['a-fin', 'chart'], ['a-settings', 'gear']];
 const roleBadge = u => u.adminRole ? `<span class="pill ${u.isAdmin ? 'ok' : 'm'}">${esc(u.adminRole)}${u.isAdmin ? '' : ' · ' + t('stopped')}</span>` : `<span class="sub">${t('no_l')}</span>`;
 const permsText = u => { const r = [...new Set([...(ROLES[u.adminRole] || []), ...(u.permissions || [])])]; return r.length >= ADMIN_R.length ? t('all_pages') : r.map(x => t('nav_' + x)).join(L() === 'ar' ? '، ' : ', '); };
@@ -1507,7 +1622,7 @@ function invoiceFile(inv) {
 </script>
 <script>
 /* Boot, navigation, rendering, actions and events. Loaded last. */
-let VID = { busy: false, status: '' };
+let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' };
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
 function toast(m, bad) {
@@ -1660,6 +1775,17 @@ function autosave() {
 }
 const num = (id, min = 0) => Math.max(min, Math.floor(+$(id).value || 0));
 
+/* Free design helpers. The latest result stays on the page until it is replaced; saving copies it into the library. */
+const freeItem = id => { const l = S.freeDraft.last; return id === 'last' ? (l && l.saved && byId(S.free, l.saved)) || l : byId(S.free, id); };
+const freeName = (it, b) => `${(co().brandEn || 'mentad').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${it.kind === 'vid' ? 'video' : 'image'}-${it.date.slice(0, 10)}.${/mp4/.test(b.type) ? 'mp4' : /webm/.test(b.type) ? 'webm' : /png/.test(b.type) ? 'png' : 'jpg'}`;
+const normTags = s => (s || '').split(/[\s,،]+/).filter(Boolean).map(w => w.startsWith('#') ? w : '#' + w).join(' ');
+async function freeLast(kind, prompt, blob) {
+  const f = S.freeDraft, old = f.last, id = rid('M');
+  await mput(id, blob);
+  f.last = { kind, prompt, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
+  if (old && !old.saved) orphan(old.media.id);
+}
+
 /* ---------- actions (data-act) ---------- */
 const A = {
   mclose() { $('#modal').hidden = true; modalOk = null; },
@@ -1796,6 +1922,86 @@ const A = {
       u.used.vidSecs += secs; logAI('video'); autosave(); toast(t('m_vid_ok'));
     } catch (e) { VID.busy = false; toast(t('m_vid_fail', { e: e.message }), 1); }
     if (S.route === 'video') render();
+  },
+  /* ---------- free design ---------- */
+  async freeimg() {
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur();
+    if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
+    if (left(u, 'images') <= 0) { quotaModal('images'); return; }
+    if (!canStore()) return;
+    const live = aiOn(); let blob = null;
+    busy(1);
+    try {
+      if (live) { try { blob = await aiFreeImage(p); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
+      else blob = await toBlob(freePoster(p));
+      try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); }
+      await freeLast('img', p, blob);
+      u.used.images++; logAI('image'); toast(t('m_img_ok'));
+    } finally { busy(0); save(); render(); }
+  },
+  async freevid() {
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+    if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
+    if (!aiOn()) { toast(t('m_vid_need'), 1); return; }
+    if (left(u, 'vidSecs') < secs) { quotaModal('vidSecs'); return; }
+    if (!canStore()) return;
+    const show = s => { FREE.status = s; if (S.route === 'free') render(); };
+    FREE = { busy: true, status: t('m_vid_sent') }; render();
+    try {
+      let b = await aiVideo({ platform: 'tiktok', vidDesc: p, refs: [], scenes: null }, show, secs, null);
+      u.used.vidSecs += secs; logAI('video'); save();
+      show(t('m_wm_vid', { n: 0 }));
+      try { b = await markVideo(b, n => show(t('m_wm_vid', { n }))); } catch (e) { toast(t('m_wm_fail'), 1); }
+      await freeLast('vid', p, b); toast(t('m_vid_ok'));
+    } catch (e) { toast(t('m_vid_fail', { e: e.message }), 1); }
+    FREE = { busy: false, status: '' }; save(); if (S.route === 'free') render();
+  },
+  freedl(d) { const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; } if (dl(b, freeName(it, b))) toast(t('fr_dl_ok')); },
+  freesave() {
+    const l = S.freeDraft.last; if (!l || l.saved) return;
+    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
+    S.free.push(it); l.saved = it.id; save(); render(); toast(t('m_fr_saved'));
+  },
+  freedel(d) {
+    modal(t('fr_del_t'), `<p>${t('fr_del_b')}</p>`, () => {
+      const it = byId(S.free, d.id); if (!it) return;
+      S.free = S.free.filter(x => x.id !== it.id);
+      const l = S.freeDraft.last; if (l && l.saved === it.id) l.saved = null;
+      orphan(it.media.id);
+    }, t('b_del'), 1);
+  },
+  freeexp(d) {
+    const it = freeItem(d.id); if (!it) return;
+    const soc = socialOf(cur()), o = { ...Object.fromEntries(Object.keys(SOCIAL).map(k => [k, SOCIAL[k].n])), ...Object.fromEntries(soc.filter(a => a.key === 'custom').map(a => [a.id, a.name])) };
+    modal(t('fr_exp'), `${it.kind === 'vid' ? '' : `<img src="${MEDIA.get(it.media.id) || ''}" alt="" style="max-height:140px;border-radius:10px;align-self:center">`}
+ ${fld(t('fx_plat'), `<select id="m-fp">${Object.entries(o).map(([k, v]) => `<option value="${esc(k)}" ${k === it.plat ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`)}
+ ${fld(t('fx_cap'), `<textarea id="m-fc" dir="auto" style="min-height:90px">${esc(it.caption || '')}</textarea>`)}
+ ${fld(t('fx_tags'), `<input id="m-ft" dir="auto" value="${esc(it.tags || '')}">`)}
+ ${aiOn() ? `<button class="btn s" style="align-self:start" data-act="freesug" data-id="${d.id}">${ic('wand')} ${t('fx_sug')}</button>` : ''}
+ <button class="btn p" style="align-self:start" data-act="freepost" data-id="${d.id}">${ic('share')} ${t('fx_post')}</button>
+ <p class="sub">${t('fx_note')}</p>`, () => { const x = freeItem(d.id); if (x) { x.plat = $('#m-fp').value; x.caption = $('#m-fc').value.trim(); x.tags = normTags($('#m-ft').value); } }, t('done'));
+  },
+  async freesug(d) {
+    const it = freeItem(d.id); if (!it) return;
+    const k = $('#m-fp').value, plat = (SOCIAL[k] || {}).n || $('#m-fp').selectedOptions[0].textContent;
+    const r = await ask(`اكتب وصفاً قصيراً جذاباً لمنشور على ${plat} يرافق ${it.kind === 'vid' ? 'مقطع فيديو' : 'صورة'} موضوعها: ${it.prompt}
+اكتب الوصف بلغة الموضوع نفسه، ثم في السطر الأخير من 3 إلى 6 هاشتاقات مناسبة فقط.`);
+    if (!r || !$('#m-fc')) return;
+    const lines = r.split('\n').map(s => s.trim()).filter(Boolean), tagLine = lines.length > 1 && /^#/.test(lines[lines.length - 1]) ? lines.pop() : '';
+    $('#m-fc').value = lines.join('\n'); if (tagLine) $('#m-ft').value = normTags(tagLine);
+  },
+  /* Phone: the share sheet with the file and the text. Computer: the file downloads and the platform opens; the text is copied either way. */
+  freepost(d) {
+    const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; }
+    const k = $('#m-fp').value, cap = $('#m-fc').value.trim(), tags = normTags($('#m-ft').value), text = [cap, tags].filter(Boolean).join('\n');
+    Object.assign(it, { plat: k, caption: cap, tags }); save();
+    const file = new File([b], freeName(it, b), { type: b.type || it.media.mime });
+    try { if (text) navigator.clipboard.writeText(text).catch(() => {}); } catch (e) {}
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], text }).catch(() => {}); return; }
+    const soc = socialOf(cur()), acc = soc.find(a => a.id === k) || soc.find(a => a.key === k), def = SOCIAL[k] || {};
+    const url = acc && acc.key === 'custom' ? acc.url : def.compose && text ? def.compose(text) : acc ? acc.url : def.home;
+    if (url) window.open(url, '_blank', 'noopener');
+    if (dl(file, file.name)) toast(t('fx_desk'));
   },
   async ortest() {
     if (!aiOn() && !S.settings.orKey) { toast(t('m_need_key'), 1); return; }
@@ -1986,6 +2192,7 @@ const A = {
     if (isLastSuper(u)) { toast(t('e_last_super'), 1); return; }
     modal(t('delu_t'), `<p>${t('delu_b', { name: esc(u.name) })}</p>`, () => {
       S.ads.filter(a => a.uid === u.id).forEach(a => mediaIds(a).forEach(mdel));
+      freeOf(u).forEach(f => mdel(f.media.id)); S.free = S.free.filter(f => f.uid !== u.id);
       S.users = S.users.filter(x => x.id !== u.id); S.ads = S.ads.filter(a => a.uid !== u.id);
       if (S.uid === u.id) S.uid = null;
     }, t('b_del'), 1);

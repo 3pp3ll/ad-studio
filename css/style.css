@@ -154,3 +154,4 @@ span.ico{cursor:default}.socup{display:flex;flex-direction:column;gap:6px;align-
 :root[data-theme="dark"]{--m1:#F37927;--m2:#329AC5}
 .mico{display:block;flex:none}.mico .s1{stop-color:var(--m1)}.mico .s2{stop-color:var(--m2)}
 .btn[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.frlib .shot{width:100%;aspect-ratio:1;object-fit:cover;background:var(--line);border-radius:10px}

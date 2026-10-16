@@ -6,7 +6,7 @@ function fin() {
   const or = texts * .02, imgCost = images * .15, stripe = mp.reduce((a, p) => a + p.amount * .029 + 1, 0);
   return { today: sum('d'), month, year: sum('y'), subs: S.users.filter(u => planOf(u).price > 0).length, images, or, imgCost, stripe, net: month - or - imgCost - stripe, perUser: S.users.length ? (or + imgCost) / S.users.length : 0 };
 }
-const NAV_U = [['home', 'home'], ['create', 'plus'], ['image', 'image'], ['video', 'video'], ['scenes', 'film'], ['library', 'lib'], ['suggest', 'msg'], ['campaigns', 'book'], ['plans', 'card'], ['account', 'gear']];
+const NAV_U = [['home', 'home'], ['create', 'plus'], ['image', 'image'], ['video', 'video'], ['scenes', 'film'], ['free', 'wand'], ['library', 'lib'], ['suggest', 'msg'], ['campaigns', 'book'], ['plans', 'card'], ['account', 'gear']];
 const NAV_A = [['a-home', 'home'], ['a-users', 'users'], ['a-plans', 'card'], ['a-ads', 'lib'], ['a-sugg', 'msg'], ['a-errors', 'bug'], ['a-usage', 'chart'], ['a-campaigns', 'book'], ['a-fin', 'chart'], ['a-settings', 'gear']];
 const roleBadge = u => u.adminRole ? `<span class="pill ${u.isAdmin ? 'ok' : 'm'}">${esc(u.adminRole)}${u.isAdmin ? '' : ' · ' + t('stopped')}</span>` : `<span class="sub">${t('no_l')}</span>`;
 const permsText = u => { const r = [...new Set([...(ROLES[u.adminRole] || []), ...(u.permissions || [])])]; return r.length >= ADMIN_R.length ? t('all_pages') : r.map(x => t('nav_' + x)).join(L() === 'ar' ? '، ' : ', '); };

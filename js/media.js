@@ -79,3 +79,62 @@ async function shrinkFile(file, max = 1600) {
     return await new Promise(ok => c.toBlob(b => ok(b || file), 'image/jpeg', .88));
   } catch (e) { return file; }
 }
+
+/* ---------- free design: the logo watermark ---------- */
+const wmLogo = () => loadImg(logoSrc(co().logo));
+/* Logo in the bottom corner, about 11% of the short side, with a soft shadow so it reads on light and dark pictures. */
+function drawMark(x, w, h, lg) {
+  const s = Math.round(Math.min(w, h) * .11), m = Math.round(Math.min(w, h) * .035), k = s / Math.max(lg.width, lg.height);
+  x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = Math.max(2, s * .1); x.globalAlpha = .92;
+  x.drawImage(lg, w - m - lg.width * k, h - m - lg.height * k, lg.width * k, lg.height * k); x.restore();
+}
+async function markImage(blob) {
+  const lg = await wmLogo(), url = URL.createObjectURL(blob);
+  try {
+    const im = await loadImg(url), c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0); drawMark(x, c.width, c.height, lg);
+    return await new Promise(ok => c.toBlob(ok, 'image/jpeg', .92));
+  } finally { URL.revokeObjectURL(url); }
+}
+/* Re-records the clip through a canvas with the logo on top. Plays muted; the sound is taken from the element's own stream where the browser offers one. */
+async function markVideo(blob, onStatus) {
+  const type = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+  if (!type || !HTMLCanvasElement.prototype.captureStream) throw new Error('unsupported');
+  const lg = await wmLogo(), url = URL.createObjectURL(blob), v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+  try {
+    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error('load')); });
+    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+    const x = c.getContext('2d'), draw = () => { x.drawImage(v, 0, 0, c.width, c.height); drawMark(x, c.width, c.height, lg); };
+    const src = v.captureStream ? v.captureStream() : v.mozCaptureStream ? v.mozCaptureStream() : null;
+    /* Start once so the element's tracks exist, then rewind and record from the first frame. */
+    await v.play(); v.pause(); v.currentTime = 0; await new Promise(ok => { v.onseeked = ok; });
+    draw();
+    const out = new MediaStream([...c.captureStream(30).getVideoTracks(), ...(src ? src.getAudioTracks() : [])]);
+    const rec = new MediaRecorder(out, { mimeType: type, videoBitsPerSecond: 6e6 }), parts = [];
+    rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
+    const done = new Promise(ok => { rec.onstop = ok; });
+    let on = true;
+    const loop = () => { if (!on) return; draw(); v.requestVideoFrameCallback ? v.requestVideoFrameCallback(loop) : requestAnimationFrame(loop); };
+    rec.start(500); await v.play(); loop();
+    const total = v.duration || 15, tick = setInterval(() => onStatus && onStatus(Math.min(99, Math.round(100 * v.currentTime / total))), 500);
+    await new Promise((ok, no) => { v.onended = ok; setTimeout(() => no(new Error('timeout')), (total * 3 + 15) * 1000); });
+    on = false; clearInterval(tick); draw(); rec.stop(); await done;
+    return new Blob(parts, { type: type.split(';')[0] });
+  } finally { v.pause(); v.removeAttribute('src'); URL.revokeObjectURL(url); }
+}
+/* Without the OpenRouter link: a plain brand card carrying the description, for trying the page. */
+function freePoster(text) {
+  const c = document.createElement('canvas'), W = 1080; c.width = c.height = W;
+  const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, W, W), b = S.settings.brand || {};
+  g.addColorStop(0, b.primary || '#1b8fbf'); g.addColorStop(1, b.accent || '#f26a0f');
+  x.fillStyle = g; x.fillRect(0, 0, W, W);
+  const ar = /[؀-ۿ]/.test(text); x.direction = ar ? 'rtl' : 'ltr'; x.textAlign = 'center'; x.fillStyle = '#fff';
+  x.font = '600 58px "IBM Plex Sans Arabic", Tahoma, sans-serif';
+  const words = text.split(/\s+/), lines = []; let ln = '';
+  for (const w of words) { const tl = ln ? ln + ' ' + w : w; if (x.measureText(tl).width > W * .78 && ln) { lines.push(ln); ln = w; } else ln = tl; }
+  if (ln) lines.push(ln);
+  const shown = lines.slice(0, 8), lh = 84, y0 = W / 2 - (shown.length - 1) * lh / 2;
+  shown.forEach((l, i) => x.fillText(i === 7 && lines.length > 8 ? l + '…' : l, W / 2, y0 + i * lh + 20));
+  return c.toDataURL('image/png');
+}

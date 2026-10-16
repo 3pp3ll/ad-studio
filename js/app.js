@@ -1,5 +1,5 @@
 /* Boot, navigation, rendering, actions and events. Loaded last. */
-let VID = { busy: false, status: '' };
+let VID = { busy: false, status: '' }, FREE = { busy: false, status: '' };
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
 function toast(m, bad) {
@@ -152,6 +152,17 @@ function autosave() {
 }
 const num = (id, min = 0) => Math.max(min, Math.floor(+$(id).value || 0));
 
+/* Free design helpers. The latest result stays on the page until it is replaced; saving copies it into the library. */
+const freeItem = id => { const l = S.freeDraft.last; return id === 'last' ? (l && l.saved && byId(S.free, l.saved)) || l : byId(S.free, id); };
+const freeName = (it, b) => `${(co().brandEn || 'mentad').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${it.kind === 'vid' ? 'video' : 'image'}-${it.date.slice(0, 10)}.${/mp4/.test(b.type) ? 'mp4' : /webm/.test(b.type) ? 'webm' : /png/.test(b.type) ? 'png' : 'jpg'}`;
+const normTags = s => (s || '').split(/[\s,،]+/).filter(Boolean).map(w => w.startsWith('#') ? w : '#' + w).join(' ');
+async function freeLast(kind, prompt, blob) {
+  const f = S.freeDraft, old = f.last, id = rid('M');
+  await mput(id, blob);
+  f.last = { kind, prompt, media: { id, size: blob.size, mime: blob.type }, date: new Date().toISOString(), saved: null };
+  if (old && !old.saved) orphan(old.media.id);
+}
+
 /* ---------- actions (data-act) ---------- */
 const A = {
   mclose() { $('#modal').hidden = true; modalOk = null; },
@@ -288,6 +299,86 @@ const A = {
       u.used.vidSecs += secs; logAI('video'); autosave(); toast(t('m_vid_ok'));
     } catch (e) { VID.busy = false; toast(t('m_vid_fail', { e: e.message }), 1); }
     if (S.route === 'video') render();
+  },
+  /* ---------- free design ---------- */
+  async freeimg() {
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur();
+    if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
+    if (left(u, 'images') <= 0) { quotaModal('images'); return; }
+    if (!canStore()) return;
+    const live = aiOn(); let blob = null;
+    busy(1);
+    try {
+      if (live) { try { blob = await aiFreeImage(p); } catch (e) { toast(t('m_img_fail', { e: e.message }), 1); return; } }
+      else blob = await toBlob(freePoster(p));
+      try { blob = await markImage(blob); } catch (e) { toast(t('m_wm_fail'), 1); }
+      await freeLast('img', p, blob);
+      u.used.images++; logAI('image'); toast(t('m_img_ok'));
+    } finally { busy(0); save(); render(); }
+  },
+  async freevid() {
+    const f = S.freeDraft, p = (f.prompt || '').trim(), u = cur(), secs = Math.min(15, Math.max(6, +S.settings.vidSec || 6));
+    if (!p) { T.err = t('e_need_prompt'); render(); return; } T.err = '';
+    if (!aiOn()) { toast(t('m_vid_need'), 1); return; }
+    if (left(u, 'vidSecs') < secs) { quotaModal('vidSecs'); return; }
+    if (!canStore()) return;
+    const show = s => { FREE.status = s; if (S.route === 'free') render(); };
+    FREE = { busy: true, status: t('m_vid_sent') }; render();
+    try {
+      let b = await aiVideo({ platform: 'tiktok', vidDesc: p, refs: [], scenes: null }, show, secs, null);
+      u.used.vidSecs += secs; logAI('video'); save();
+      show(t('m_wm_vid', { n: 0 }));
+      try { b = await markVideo(b, n => show(t('m_wm_vid', { n }))); } catch (e) { toast(t('m_wm_fail'), 1); }
+      await freeLast('vid', p, b); toast(t('m_vid_ok'));
+    } catch (e) { toast(t('m_vid_fail', { e: e.message }), 1); }
+    FREE = { busy: false, status: '' }; save(); if (S.route === 'free') render();
+  },
+  freedl(d) { const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; } if (dl(b, freeName(it, b))) toast(t('fr_dl_ok')); },
+  freesave() {
+    const l = S.freeDraft.last; if (!l || l.saved) return;
+    const it = { id: rid('F'), uid: S.uid, kind: l.kind, prompt: l.prompt, media: { ...l.media }, date: l.date, caption: l.caption || '', tags: l.tags || '' };
+    S.free.push(it); l.saved = it.id; save(); render(); toast(t('m_fr_saved'));
+  },
+  freedel(d) {
+    modal(t('fr_del_t'), `<p>${t('fr_del_b')}</p>`, () => {
+      const it = byId(S.free, d.id); if (!it) return;
+      S.free = S.free.filter(x => x.id !== it.id);
+      const l = S.freeDraft.last; if (l && l.saved === it.id) l.saved = null;
+      orphan(it.media.id);
+    }, t('b_del'), 1);
+  },
+  freeexp(d) {
+    const it = freeItem(d.id); if (!it) return;
+    const soc = socialOf(cur()), o = { ...Object.fromEntries(Object.keys(SOCIAL).map(k => [k, SOCIAL[k].n])), ...Object.fromEntries(soc.filter(a => a.key === 'custom').map(a => [a.id, a.name])) };
+    modal(t('fr_exp'), `${it.kind === 'vid' ? '' : `<img src="${MEDIA.get(it.media.id) || ''}" alt="" style="max-height:140px;border-radius:10px;align-self:center">`}
+ ${fld(t('fx_plat'), `<select id="m-fp">${Object.entries(o).map(([k, v]) => `<option value="${esc(k)}" ${k === it.plat ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`)}
+ ${fld(t('fx_cap'), `<textarea id="m-fc" dir="auto" style="min-height:90px">${esc(it.caption || '')}</textarea>`)}
+ ${fld(t('fx_tags'), `<input id="m-ft" dir="auto" value="${esc(it.tags || '')}">`)}
+ ${aiOn() ? `<button class="btn s" style="align-self:start" data-act="freesug" data-id="${d.id}">${ic('wand')} ${t('fx_sug')}</button>` : ''}
+ <button class="btn p" style="align-self:start" data-act="freepost" data-id="${d.id}">${ic('share')} ${t('fx_post')}</button>
+ <p class="sub">${t('fx_note')}</p>`, () => { const x = freeItem(d.id); if (x) { x.plat = $('#m-fp').value; x.caption = $('#m-fc').value.trim(); x.tags = normTags($('#m-ft').value); } }, t('done'));
+  },
+  async freesug(d) {
+    const it = freeItem(d.id); if (!it) return;
+    const k = $('#m-fp').value, plat = (SOCIAL[k] || {}).n || $('#m-fp').selectedOptions[0].textContent;
+    const r = await ask(`اكتب وصفاً قصيراً جذاباً لمنشور على ${plat} يرافق ${it.kind === 'vid' ? 'مقطع فيديو' : 'صورة'} موضوعها: ${it.prompt}
+اكتب الوصف بلغة الموضوع نفسه، ثم في السطر الأخير من 3 إلى 6 هاشتاقات مناسبة فقط.`);
+    if (!r || !$('#m-fc')) return;
+    const lines = r.split('\n').map(s => s.trim()).filter(Boolean), tagLine = lines.length > 1 && /^#/.test(lines[lines.length - 1]) ? lines.pop() : '';
+    $('#m-fc').value = lines.join('\n'); if (tagLine) $('#m-ft').value = normTags(tagLine);
+  },
+  /* Phone: the share sheet with the file and the text. Computer: the file downloads and the platform opens; the text is copied either way. */
+  freepost(d) {
+    const it = freeItem(d.id), b = it && BLOBS.get(it.media.id); if (!b) { toast(t('e_ref_missing'), 1); return; }
+    const k = $('#m-fp').value, cap = $('#m-fc').value.trim(), tags = normTags($('#m-ft').value), text = [cap, tags].filter(Boolean).join('\n');
+    Object.assign(it, { plat: k, caption: cap, tags }); save();
+    const file = new File([b], freeName(it, b), { type: b.type || it.media.mime });
+    try { if (text) navigator.clipboard.writeText(text).catch(() => {}); } catch (e) {}
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], text }).catch(() => {}); return; }
+    const soc = socialOf(cur()), acc = soc.find(a => a.id === k) || soc.find(a => a.key === k), def = SOCIAL[k] || {};
+    const url = acc && acc.key === 'custom' ? acc.url : def.compose && text ? def.compose(text) : acc ? acc.url : def.home;
+    if (url) window.open(url, '_blank', 'noopener');
+    if (dl(file, file.name)) toast(t('fx_desk'));
   },
   async ortest() {
     if (!aiOn() && !S.settings.orKey) { toast(t('m_need_key'), 1); return; }
@@ -478,6 +569,7 @@ const A = {
     if (isLastSuper(u)) { toast(t('e_last_super'), 1); return; }
     modal(t('delu_t'), `<p>${t('delu_b', { name: esc(u.name) })}</p>`, () => {
       S.ads.filter(a => a.uid === u.id).forEach(a => mediaIds(a).forEach(mdel));
+      freeOf(u).forEach(f => mdel(f.media.id)); S.free = S.free.filter(f => f.uid !== u.id);
       S.users = S.users.filter(x => x.id !== u.id); S.ads = S.ads.filter(a => a.uid !== u.id);
       if (S.uid === u.id) S.uid = null;
     }, t('b_del'), 1);

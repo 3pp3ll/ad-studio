@@ -107,6 +107,14 @@ async function aiImage(d) {
   return toBlob(u);
 }
 
+/* Free design: the description goes to the image model as written. */
+async function aiFreeImage(prompt) {
+  const j = await orFetch('/chat/completions', { model: S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
+  if (!u) throw new Error(t('e_no_image'));
+  return toBlob(u);
+}
+
 /* Video: async job. The first frame is the designed still (decor mode) or the first attachment;
    if the model refuses the frame, retry text-only. */
 async function aiVideo(d, onStatus, secs, firstFrame) {

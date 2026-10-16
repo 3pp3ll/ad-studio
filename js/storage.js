@@ -44,9 +44,9 @@ async function mload() {
   } catch (e) { DB = null; }
 }
 
-const owned = id => S.ads.some(a => mediaIds(a).includes(id));
+const owned = id => S.ads.some(a => mediaIds(a).includes(id)) || (S.free || []).some(f => f.media.id === id);
 /* Deletes a file once neither a saved ad nor the open draft uses it. */
-const orphan = id => { if (id && !owned(id) && !mediaIds(S.draft).includes(id)) mdel(id); };
+const orphan = id => { if (id && !owned(id) && !mediaIds(S.draft).includes(id) && !(S.freeDraft && S.freeDraft.last && S.freeDraft.last.media.id === id)) mdel(id); };
 
 async function toBlob(u) {
   if (!u.startsWith('data:')) return (await fetch(u)).blob();
