@@ -1,0 +1,13 @@
+{
+  "name": "adhelper",
+  "version": "6.0.0",
+  "private": true,
+  "description": "Ad Studio: static web app with an optional Cloudflare Worker proxy for OpenRouter",
+  "scripts": {
+    "dev": "npx --yes serve -l 8080 .",
+    "build": "node build.js",
+    "worker:dev": "cd server && npx wrangler dev",
+    "worker:secret": "cd server && npx wrangler secret put OPENROUTER_KEY",
+    "deploy": "cd server && npx wrangler deploy"
+  }
+}

@@ -1,0 +1,11 @@
+name = "adhelper-proxy"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# The site allowed to call this Worker, e.g. "https://ads.example.com".
+# "*" allows any origin: fine for a local test, not for a public deployment.
+[vars]
+ALLOWED_ORIGIN = "*"
+
+# The key is a secret, never a var:
+#   npx wrangler secret put OPENROUTER_KEY
