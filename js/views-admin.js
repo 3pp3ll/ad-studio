@@ -125,6 +125,7 @@ V['a-settings'] = () => {
  <div class="panel"><h2>${t('brand_t')}</h2>
  <div class="row">${fld(t('brand_primary'), `<input id="br-p" type="color" style="width:72px;padding:2px;height:40px" data-m="settings.brand.primary" value="${/^#[0-9a-f]{6}$/i.test(b.primary || '') ? b.primary : '#56b9f0'}">`)}${fld(t('brand_accent'), `<input id="br-a" type="color" style="width:72px;padding:2px;height:40px" data-m="settings.brand.accent" value="${/^#[0-9a-f]{6}$/i.test(b.accent || '') ? b.accent : '#b8a9e3'}">`)}
  <button class="btn" data-act="brandpreset">${t('brand_logo')}</button><button class="btn" data-act="brandreset">${t('co_default')}</button></div>
+ <label class="row"><input type="checkbox" id="br-dark" data-m="settings.brand.dark" ${b.dark ? 'checked' : ''}> ${t('brand_dark')}</label>
  <div class="row"><button class="btn p" tabindex="-1">${t('brand_sample')}</button><span class="pill">${t('brand_sample')}</span><span class="pill v">${t('brand_sample')}</span></div>
  <p class="sub">${t('brand_note')}</p></div>`; })()}
  <div class="panel"><h2>${t('socic_t')}</h2>

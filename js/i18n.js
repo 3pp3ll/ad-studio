@@ -215,8 +215,9 @@ Object.assign(I18N, {
   e_logo: ['اكتب كود SVG يبدأ بـ <svg أو رابطاً يبدأ بـ https://', 'Enter SVG code starting with <svg or a link starting with https://'], e_links: ['صيغة الروابط غير صحيحة. كل رابط يحتاج label و href يبدأ بـ https://', 'The links format is invalid. Each link needs a label and an href starting with https://'],
   pw_t: ['تغيير كلمة المرور', 'Change password'], pw_cur: ['كلمة المرور الحالية', 'Current password'], pw_new: ['كلمة المرور الجديدة', 'New password'], pw_save: ['حفظ كلمة المرور', 'Save password'], pw_wrong: ['كلمة المرور الحالية غير صحيحة.', 'The current password is wrong.'], pw_done: ['تم تغيير كلمة المرور.', 'Password changed.'],
   co_icon: ['أيقونة الترويسة والمتصفح', 'Header and browser icon'], co_icon_m: ['أيقونة تدرّج M', 'Gradient M icon'], co_icon_logo: ['الشعار الأصلي (المنطاد)', 'Original logo (balloon)'],
+  brand_dark: ['تطبيق الألوان على الوضع الليلي أيضاً', 'Also apply the colours to the night theme'],
   brand_t: ['ألوان الواجهة', 'Interface colours'], brand_primary: ['اللون الأساسي', 'Primary colour'], brand_accent: ['اللون الثانوي', 'Secondary colour'], brand_logo: ['ألوان الشعار', 'Logo colours'], brand_sample: ['معاينة', 'Preview'],
-  brand_note: ['اللونان يُطبَّقان على الأزرار والروابط والشارات في الوضعين الفاتح والداكن. «الافتراضي» يرجع ألوان الهوية الأصلية.', 'Both colours apply to buttons, links and badges in light and dark mode. "Default" restores the original palette.']
+  brand_note: ['اللونان يُطبَّقان على الأزرار والروابط والشارات في الوضع النهاري، وفي الليلي إن فعّلت الخيار. لون الأزرار يُعتَم قليلاً عند الحاجة ليبقى النص الأبيض واضحاً. «الافتراضي» يرجع الألوان الأصلية.', 'Both colours apply to buttons, links and badges in light and dark mode. "Default" restores the original palette.']
 });
 const UI = { ar: {}, en: {} };
 for (const k in I18N) { UI.ar[k] = I18N[k][0]; UI.en[k] = I18N[k][1]; }

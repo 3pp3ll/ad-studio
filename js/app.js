@@ -30,13 +30,23 @@ function go(r) { scStop(); T = { err: '', msg: '' }; S.route = guard(r); save();
 const hex3 = h => { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); return m ? [0, 2, 4].map(i => parseInt(m[1].substr(i, 2), 16)) : null; };
 const mixc = (a, b, k) => '#' + a.map((v, i) => Math.round(v * (1 - k) + b[i] * k).toString(16).padStart(2, '0')).join('');
 const lum = c => (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+/* WCAG contrast, used to keep white button text readable on the chosen colour. */
+const relL = c => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; return .2126 * f(c[0]) + .7152 * f(c[1]) + .0722 * f(c[2]); };
+const contrast = (a, b) => { const x = relL(a), y = relL(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+/* Brand colours from the settings become theme tokens: always for the day theme, and for the night theme when "dark" is on. */
 function brandCSS() {
-  const b = S.settings.brand || {}, p = hex3(b.primary), a = hex3(b.accent), W = [255, 255, 255], K = [0, 0, 0], D = [18, 23, 30];
+  const b = S.settings.brand || {}, p = hex3(b.primary), a = hex3(b.accent), W = [255, 255, 255], K = [0, 0, 0], D = [18, 23, 30], INK = [10, 43, 64];
   if (!p && !a) return '';
   let lt = '', dk = '';
-  if (p) { lt += `--primary:${mixc(p, W, 0)};--primary-ink:${mixc(p, K, .38)};--primary-soft:${mixc(p, W, .88)};--on-primary:${lum(p) > .55 ? '#0A2B40' : '#FFFFFF'};`; dk += `--primary:${mixc(p, W, .12)};--primary-ink:${mixc(p, W, .5)};--primary-soft:${mixc(p, D, .78)};--on-primary:${lum(p) > .5 ? '#07202F' : '#FFFFFF'};`; }
+  if (p) {
+    let bg = p, k = 0;
+    const white = contrast(p, W) >= 3;
+    while (white && contrast(bg, W) < 4.5 && k < .6) { k += .02; bg = hex3(mixc(p, K, k)); }
+    lt += `--primary:${mixc(bg, W, 0)};--primary-ink:${mixc(p, K, .38)};--primary-soft:${mixc(p, W, .88)};--on-primary:${white ? '#FFFFFF' : '#0A2B40'};`;
+    dk += `--primary:${mixc(p, W, .12)};--primary-ink:${mixc(p, W, .5)};--primary-soft:${mixc(p, D, .78)};--on-primary:${lum(p) > .5 ? '#07202F' : '#FFFFFF'};`;
+  }
   if (a) { lt += `--violet:${mixc(a, W, 0)};--violet-ink:${mixc(a, K, .3)};--violet-soft:${mixc(a, W, .88)};`; dk += `--violet:${mixc(a, W, .1)};--violet-ink:${mixc(a, W, .45)};--violet-soft:${mixc(a, D, .8)};`; }
-  return `:root{${lt}}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${dk}}}:root[data-theme="dark"]{${dk}}`;
+  return `:root{${lt}}` + (b.dark ? `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${dk}}}:root[data-theme="dark"]{${dk}}` : '');
 }
 function applyChrome() {
   const de = document.documentElement, th = S.settings.theme;
@@ -360,8 +370,8 @@ const A = {
   daynight() { S.settings.theme = isDark() ? 'light' : 'dark'; save(); render(); },
   iconstyle(d) { co().iconStyle = d.v === 'logo' ? 'logo' : 'gradient-m'; save(); render(); },
   logoreset(d) { co()[d.k] = DEFAULT_LOGO; save(); render(); },
-  brandpreset() { S.settings.brand = { primary: '#1b8fbf', accent: '#f26a0f' }; save(); render(); },
-  brandreset() { S.settings.brand = { primary: '', accent: '' }; save(); render(); },
+  brandpreset() { S.settings.brand = { ...S.settings.brand, primary: '#1b8fbf', accent: '#f26a0f' }; save(); render(); },
+  brandreset() { S.settings.brand = { ...S.settings.brand, primary: '', accent: '' }; save(); render(); },
   socicondel(d) { if (S.settings.socIcons) delete S.settings.socIcons[d.k]; save(); render(); },
   addonadd() { S.addons.push({ id: rid('AO'), name: t('addon_new'), kind: 'images', mode: 'pack', amount: 10, price: 10, active: true }); save(); render(); },
   addontoggle(d) { const a = S.addons[+d.i]; a.active = !a.active; save(); render(); },

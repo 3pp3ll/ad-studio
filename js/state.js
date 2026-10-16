@@ -112,7 +112,7 @@ const logoSrc = v => {
    The two stops take their colour from --m1/--m2, which are slightly lighter in dark mode. */
 const M_ICON = '<svg xmlns="http://www.w3.org/2000/svg" class="mico" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="M"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="s1" stop-color="#F26A0F"/><stop offset="1" class="s2" stop-color="#1B8FBF"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#mg)"/><text x="16" y="16.5" text-anchor="middle" dominant-baseline="central" font-family="Alexandria,Arial,sans-serif" font-weight="700" font-size="19" fill="#fff">M</text></svg>';
 const iconIsM = () => co().iconStyle !== 'logo';
-const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '', accent: '' } });
+const defaultSettings = () => ({ mailFrom: 'no-reply@example.com', mailName: 'استوديو الإعلانات', orBase: 'https://openrouter.ai/api/v1', orKey: '', orLive: false, txtModel: 'google/gemini-2.5-flash', imgModel: 'google/gemini-2.5-flash-image', vidModel: 'x-ai/grok-imagine-video', vidSec: 6, vidEndpoint: '/videos', stripeLive: false, currency: 'SAR', twofa: true, lockAfter: 5, campaigns: false, dashHome: 'a-home', uiLang: 'ar', theme: 'auto', socIcons: {}, company: defaultCompany(), brand: { primary: '#1b8fbf', accent: '#f26a0f', dark: false, v: 2 } });
 
 function seed() {
   const plans = [
@@ -231,7 +231,9 @@ function loadState() {
   try { o = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
   S = migrate(o) || seed();
   S.settings.company = { ...defaultCompany(), ...(S.settings.company || {}) };
-  S.settings.brand = { primary: '', accent: '', ...(S.settings.brand || {}) };
+  S.settings.brand = { primary: '', accent: '', dark: false, ...(S.settings.brand || {}) };
+  /* v2: the day theme uses the identity colours by default (once; a later reset to the original palette is kept). */
+  if (!S.settings.brand.v) { if (!S.settings.brand.primary && !S.settings.brand.accent) Object.assign(S.settings.brand, { primary: '#1b8fbf', accent: '#f26a0f', dark: false }); S.settings.brand.v = 2; }
 }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S, (k, v) => k === 'dataURL' ? undefined : v)); }
