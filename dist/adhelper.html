@@ -171,6 +171,7 @@ span.ico{cursor:default}.socup{display:flex;flex-direction:column;gap:6px;align-
 .mico{display:block;flex:none}.mico .s1{stop-color:var(--m1)}.mico .s2{stop-color:var(--m2)}
 .btn[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
 .frlib .shot{width:100%;aspect-ratio:1;object-fit:cover;background:var(--line);border-radius:10px}
+.wmrow{align-items:center;gap:14px}.wmopt{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:1.1rem}.wmopt input{width:22px;height:22px;min-width:22px;margin:0;accent-color:var(--primary);cursor:pointer}
 
 </style>
 </head>
@@ -1064,7 +1065,7 @@ async function aiImage(d) {
 
 /* Free design: the description goes to the image model as written. */
 /* A short request becomes one precise English prompt; words that must appear stay in their own language and spelling, in quotes. */
-const FREE_SYS = 'You turn a short user request into one precise prompt for an AI {k} generation model. Write the prompt in English. Keep the user\'s intent exactly and add concrete details: subject, composition, style, colours, lighting{v}. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script), say it must be spelled exactly as written, large and legible, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a clean flat vector-style mark with the name, centered on a plain white background, no mockup, no extra symbols. Reply with the prompt only.';
+const FREE_SYS = 'You are a senior art director. Turn a short user request into one rich, precise prompt for a state-of-the-art AI {k} model. Write the prompt in English. Keep the user\'s intent exactly, then direct it like a professional commercial shoot or a top branding studio: subject and its details, composition and framing, visual style, colour palette, materials and textures, lighting and mood, depth and realism{v}. Aim for premium, polished, award-winning quality, never clip-art or generic stock look. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script, connected letters, correct right-to-left order), say it must be spelled exactly as written with refined professional typography, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a distinctive, modern, professional brand mark with a clever symbol that reflects the business, balanced proportions, refined lettering, presented on a clean light background with subtle depth, high resolution. Reply with the prompt only.';
 async function freePrompt(p, kind) {
   if (!aiOn()) return p;
   try {
@@ -1073,7 +1074,9 @@ async function freePrompt(p, kind) {
   } catch (e) { return p; }
 }
 async function aiFreeImage(prompt) {
-  const j = await orFetch('/chat/completions', { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const body = { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] };
+  /* Ask for 2K where the model supports it; retry plain if the option is refused. */
+  let j; try { j = await orFetch('/chat/completions', { ...body, image_config: { image_size: '2K' } }); } catch (e) { j = await orFetch('/chat/completions', body); }
   const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
   if (!u) throw new Error(t('e_no_image'));
   return toBlob(u);
@@ -1271,7 +1274,7 @@ V.free = () => {
  <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
  <div class="cols"><div class="panel">${errBox()}
  ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
- <div class="row" role="group" aria-label="${esc(t('fr_wm'))}"><span class="sub">${t('fr_wm')}</span>${['none', 'logo'].map(k => `<button class="btn s${(f.wm || 'none') === k ? ' p' : ''}" data-act="freewmset" data-v="${k}" aria-pressed="${(f.wm || 'none') === k}">${t('fr_wm_' + k, { brand: esc(coBrand()) })}</button>`).join('')}</div>
+ <div class="row wmrow" role="group" aria-label="${esc(t('fr_wm'))}"><b>${t('fr_wm')}</b>${[['logo', '✅'], ['none', '❌']].map(([k, sym]) => `<label class="wmopt"><span aria-hidden="true">${sym}</span><input type="checkbox" id="fr-wm-${k}" data-wm="${k}" ${(f.wm || 'none') === k ? 'checked' : ''} aria-label="${esc(t('fr_wm_' + k, { brand: coBrand() }))}"></label>`).join('')}</div>
  <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
  ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
  <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) + ' ' + t('fr_model', { m: esc(S.settings.freeImgModel || S.settings.imgModel) }) : t('fr_offline')}</p></div>
@@ -2344,6 +2347,7 @@ document.addEventListener('keydown', e => {
 function bind(e) {
   const el = e.target;
   if (el.dataset.ref !== undefined) { if (e.type === 'change') A.refpick(el.files); return; }
+  if (el.dataset.wm) { if (e.type === 'change') { S.freeDraft.wm = el.checked ? el.dataset.wm : (el.dataset.wm === 'logo' ? 'none' : 'logo'); save(); render(); } return; }
   if ('bgup' in el.dataset) { if (e.type === 'change') A.bgup(el.files[0]); return; }
   if (el.dataset.logo) { if (e.type === 'change') A.logoup(el.dataset.logo, el.files[0]); return; }
   if (el.dataset.logotext) { if (e.type === 'change') { const v = el.value.trim(); if (v && !/^(<svg[\s>]|https:\/\/)/i.test(v)) { toast(t('e_logo'), 1); return; } co()[el.dataset.logotext] = v || DEFAULT_LOGO; save(); render(); } return; }

@@ -688,6 +688,7 @@ document.addEventListener('keydown', e => {
 function bind(e) {
   const el = e.target;
   if (el.dataset.ref !== undefined) { if (e.type === 'change') A.refpick(el.files); return; }
+  if (el.dataset.wm) { if (e.type === 'change') { S.freeDraft.wm = el.checked ? el.dataset.wm : (el.dataset.wm === 'logo' ? 'none' : 'logo'); save(); render(); } return; }
   if ('bgup' in el.dataset) { if (e.type === 'change') A.bgup(el.files[0]); return; }
   if (el.dataset.logo) { if (e.type === 'change') A.logoup(el.dataset.logo, el.files[0]); return; }
   if (el.dataset.logotext) { if (e.type === 'change') { const v = el.value.trim(); if (v && !/^(<svg[\s>]|https:\/\/)/i.test(v)) { toast(t('e_logo'), 1); return; } co()[el.dataset.logotext] = v || DEFAULT_LOGO; save(); render(); } return; }

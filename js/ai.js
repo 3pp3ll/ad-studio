@@ -109,7 +109,7 @@ async function aiImage(d) {
 
 /* Free design: the description goes to the image model as written. */
 /* A short request becomes one precise English prompt; words that must appear stay in their own language and spelling, in quotes. */
-const FREE_SYS = 'You turn a short user request into one precise prompt for an AI {k} generation model. Write the prompt in English. Keep the user\'s intent exactly and add concrete details: subject, composition, style, colours, lighting{v}. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script), say it must be spelled exactly as written, large and legible, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a clean flat vector-style mark with the name, centered on a plain white background, no mockup, no extra symbols. Reply with the prompt only.';
+const FREE_SYS = 'You are a senior art director. Turn a short user request into one rich, precise prompt for a state-of-the-art AI {k} model. Write the prompt in English. Keep the user\'s intent exactly, then direct it like a professional commercial shoot or a top branding studio: subject and its details, composition and framing, visual style, colour palette, materials and textures, lighting and mood, depth and realism{v}. Aim for premium, polished, award-winning quality, never clip-art or generic stock look. If the request needs words, a brand name or a logo, use only the name the user gave; put every word that must appear in double quotes in its original language and script (Arabic stays in Arabic script, connected letters, correct right-to-left order), say it must be spelled exactly as written with refined professional typography, and that no other text may appear anywhere. If no words are needed, say: no text, no letters. For a logo: a distinctive, modern, professional brand mark with a clever symbol that reflects the business, balanced proportions, refined lettering, presented on a clean light background with subtle depth, high resolution. Reply with the prompt only.';
 async function freePrompt(p, kind) {
   if (!aiOn()) return p;
   try {
@@ -118,7 +118,9 @@ async function freePrompt(p, kind) {
   } catch (e) { return p; }
 }
 async function aiFreeImage(prompt) {
-  const j = await orFetch('/chat/completions', { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] });
+  const body = { model: S.settings.freeImgModel || S.settings.imgModel, modalities: ['image', 'text'], messages: [{ role: 'user', content: prompt }] };
+  /* Ask for 2K where the model supports it; retry plain if the option is refused. */
+  let j; try { j = await orFetch('/chat/completions', { ...body, image_config: { image_size: '2K' } }); } catch (e) { j = await orFetch('/chat/completions', body); }
   const im = j.choices && j.choices[0].message.images, u = im && im[0] && im[0].image_url && im[0].image_url.url;
   if (!u) throw new Error(t('e_no_image'));
   return toBlob(u);

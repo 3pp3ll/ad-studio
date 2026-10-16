@@ -160,7 +160,7 @@ V.free = () => {
  <p class="note info">${t('fr_note', { brand: esc(coBrand()) })}<br><span class="sub">${t('fr_note2')}</span></p>
  <div class="cols"><div class="panel">${errBox()}
  ${fld(t('fr_prompt'), `<textarea id="fr-prompt" dir="auto" data-m="freeDraft.prompt" style="min-height:150px">${esc(f.prompt || '')}</textarea>`)}
- <div class="row" role="group" aria-label="${esc(t('fr_wm'))}"><span class="sub">${t('fr_wm')}</span>${['none', 'logo'].map(k => `<button class="btn s${(f.wm || 'none') === k ? ' p' : ''}" data-act="freewmset" data-v="${k}" aria-pressed="${(f.wm || 'none') === k}">${t('fr_wm_' + k, { brand: esc(coBrand()) })}</button>`).join('')}</div>
+ <div class="row wmrow" role="group" aria-label="${esc(t('fr_wm'))}"><b>${t('fr_wm')}</b>${[['logo', '✅'], ['none', '❌']].map(([k, sym]) => `<label class="wmopt"><span aria-hidden="true">${sym}</span><input type="checkbox" id="fr-wm-${k}" data-wm="${k}" ${(f.wm || 'none') === k ? 'checked' : ''} aria-label="${esc(t('fr_wm_' + k, { brand: coBrand() }))}"></label>`).join('')}</div>
  <div class="row"><button class="btn p" data-act="freeimg" ${FREE.busy ? 'disabled' : ''}>${ic('image')} ${t('fr_genimg')}</button><button class="btn v" data-act="freevid" ${!aiOn() || FREE.busy ? 'disabled' : ''}>${ic('video')} ${t('fr_genvid')}</button></div>
  ${FREE.busy ? `<p class="note info" role="status">${esc(FREE.status)}</p>` : ''}
  <p class="sub">${aiOn() ? t('fr_vidinfo', { n: secs }) + ' ' + t('fr_model', { m: esc(S.settings.freeImgModel || S.settings.imgModel) }) : t('fr_offline')}</p></div>
