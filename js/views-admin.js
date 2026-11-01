@@ -90,6 +90,7 @@ V['a-settings'] = () => {
   const ck = (id, m, l, extra = '') => `<label class="row"><input type="checkbox" id="${id}" data-m="${m}" ${extra} ${m.split('.').reduce((o, k) => o[k], S) ? 'checked' : ''}> ${t(l)}</label>`;
   const inp = (id, m, v, extra = '') => `<input id="${id}" dir="ltr" data-m="${m}" value="${esc(v)}" ${extra}>`;
   return `<div class="head"><h1>${t('set_t')}</h1></div>
+ <div class="panel" id="refPanel"></div>
  <div class="panel"><div class="row" style="justify-content:space-between"><h2>${t('or_t')}</h2><span class="pill ${aiOn() ? 'ok' : 'm'}">${t(aiOn() ? 'on_l' : 'off_l')}</span></div>
  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
  ${fld(t('f_apiurl'), inp('st-ob', 'settings.orBase', s.orBase))}

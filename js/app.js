@@ -117,6 +117,7 @@ function render() {
   $('#nav').setAttribute('aria-label', t('nav_label'));
   $('#nav').innerHTML = (adminMode ? NAV_A.filter(n => allowed(n[0])) : NAV_U).map(([k, i]) => `<button data-go="${k}" ${k === r ? 'aria-current="page"' : ''}>${ic(i)}${t('nav_' + k)}${k === 'campaigns' || k === 'a-campaigns' ? ` <span class="pill v">${t('soon')}</span>` : ''}</button>`).join('');
   $('#view').innerHTML = V[r]();
+  if (r === 'a-settings' && window.REF) REF.panel($('#refPanel'), { title: 'روابط الإحالة' });
   const on = $('#nav [aria-current]'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
 
@@ -647,7 +648,7 @@ const F = {
     else if (!(pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /\d/.test(pass) && /[^A-Za-z0-9]/.test(pass))) T.err = t('e_pass');
     else {
       const s = rid('s'), u = newUser({ name, email, phone: f.phone.value.trim(), pw: { s, h: await sha(s + pass) } });
-      S.users.push(u); S.uid = u.id; return go('home');
+      S.users.push(u); S.uid = u.id; if (window.REF) REF.signup(); return go('home');
     }
     render();
   },
